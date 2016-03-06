@@ -5,7 +5,7 @@
         <div class="col s12 m6 l12">
           <div class="card blue-grey darken-1">
             <div class="card-content white-text">
-              <span class="card-title">Vos informations</span>
+              <span class="card-title">User information</span>
               <p>Ici se retrouve toutes les informations que le système aimerais connaitre de vous. La raison de ce besoin est détaillée dans chaque cas.</p>
             </div>
           </div>
