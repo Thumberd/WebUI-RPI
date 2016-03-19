@@ -7,7 +7,7 @@
     <div class="card orange lighten-3">
       <div class="card-content white-text">
         <span class="card-title">Panel</span>
-        <p>Infos générales</p>
+        <p>Infos générales {{Request::ip()}}</p>
       </div>
     </div>
   </div>

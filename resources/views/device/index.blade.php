@@ -26,7 +26,7 @@
             <tr>
                 <th data-field="id">Id</th>
                 <th data-field="name">Name</th>
-                <th data-field="code">Code</th>
+                <th data-field="code">Code / IP</th>
                 <th data-field="delete"> </th>
             </tr>
           </thead>
@@ -50,7 +50,7 @@
                    {{ $device->name }}
                 </td>
                 <td>
-                  {{ $device-> code }}
+                  {{ $device->code }} / {{ $device->ip }}
                 </td>
                 <td>
                   <form action="{{ url('device/'.$device->id) }}" method="POST">
@@ -77,9 +77,13 @@
            <form action="{{ url('/device') }}" method="POST" class="form-horizontal">
               {!! csrf_field() !!}
               <div class="row">
-                <div class="input-field col s12">
+                <div class="input-field col s8">
                   <input id="name" type="text" name="name" class="validate">
                   <label for="name">Name</label>
+                </div>
+                <div class="input-field col s4">
+                  <input id="ip" type="text" name="ip"class="validate">
+                  <label for="ip">IP</label>
                 </div>
                 <div class="input-field col s6">
                   <input id="code" type="text" name="code"class="validate">

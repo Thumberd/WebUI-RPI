@@ -30,6 +30,7 @@ class DeviceController extends Controller
       $device->name = $request->name;
       $device->code = $request->code;
       $device->type = $request->type;
+      $device->ip = $request->ip;
       $device->save();
 
       return redirect('/devices');

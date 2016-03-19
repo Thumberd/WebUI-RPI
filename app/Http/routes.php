@@ -43,5 +43,12 @@ Route::group(['middleware' => ['web']], function () {
       Route::post('wakeOnLan', 'ApiController@wakeOnLan');
       Route::post('temperature', 'ApiController@temperature');
   });
+  Route::get('/local', 'LocalController@index');
+  Route::get('/localinfo', 'LocalController@info');
   Route::auth();
 });
+
+// Route::group(['middleware' => ['localhost']], function () {
+//   Route::get('/local', 'LocalController@index');
+//   Route::get('/localinfo', 'LocalController@info');
+// });

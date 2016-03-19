@@ -77,5 +77,37 @@
           </div>
         </div>
 
+        <!-- RFID tag -->
+        <div class="col s12 m12 l12">
+          <div class="col s6">
+            <div class="card grey lighten-3">
+              <div class="card-content black-text">
+                <span class="card-title">RFID tag</span>
+                <p>In order to authenticate give us your RFID tag</p>
+              </div>
+            </div>
+          </div>
+          <div class="col s6">
+            <div class="card grey lighten-3">
+              <div class="card-content black-text">
+                <div class="row valign-wrapper">
+                  <form action="{{ url('/profile/apifree') }}" method="POST" class="form-horizontal">
+                     {!! csrf_field() !!}
+                     <div class="input-field col s4 valign">
+                       <input disabled id="disabled" name="user" type="text" class="validate" value="{{ Auth::user()->RFID }}"/>
+                       <label for="user">RFID</label>
+                     </div>
+                    <div class="input-field col s4 valign">
+                      <button type="submit" class="waves-effect waves-light btn">
+                        Save
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
             @endsection
