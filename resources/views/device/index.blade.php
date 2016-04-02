@@ -41,7 +41,7 @@
                   @if ($device->type == '1')
                     <i class="fa fa-upload"></i> <!-- OUTPUT -->
                   @elseif ($device->type == '2')
-                    <i class="fa fa-download"></i> <!-- INPUT -->
+                    <i class="fa fa-bug"></i> <!-- ALARM -->
                   @elseif ($device->type == '3')
                     <i class="fa fa-server"></i> <!-- WOL -->
                   @elseif ($device->type == '4')

@@ -10,7 +10,11 @@ var wakeOnLan = React.createClass({
     $.ajax({
       url: "/api/v1/wakeOnLan",
       method: "POST",
-      data: { id: this.props.id, _token: this.props.token },
+      data: { id: this.props.id },
+      headers: {
+        'Token-Id': this.props.tokenID,
+        'Token-Key': this.props.tokenKey
+      },
       success: function (data) {
         console.log(data);
         Materialize.toast('Device is up', 2000);

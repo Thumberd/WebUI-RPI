@@ -1,4 +1,5 @@
 <?php
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,15 +22,12 @@
 | kernel and includes session state, CSRF protection, and more.
 |
 */
-
 Route::group(['middleware' => ['web']], function () {
     //
   Route::get('/', function () {
       return view('welcome');
   });
   Route::get('/panel', 'PanelController@index');
-  Route::post('/alarmState', 'PanelController@alarmState');
-  Route::post('/alarmStateUp', 'PanelController@alarmStateUp');
 
   Route::get('/profile', 'ProfileController@index');
   Route::post('/profile/mail', 'ProfileController@storeMail');
@@ -39,9 +37,25 @@ Route::group(['middleware' => ['web']], function () {
   Route::post('/device', 'DeviceController@store');
   Route::delete('/device/{device}', 'DeviceController@delete');
 
-  Route::group(['prefix' => 'api/v1'], function () {
+  Route::post('token', function (Request $req){
+    if (Auth::once(['email' => $req->input('email'), 'password' => $req->input('password')]))
+      {
+          Auth::user()->token_id = str_random(10);
+          Auth::user()->token_key = str_random(60);
+          Auth::user()->save();
+          return json_encode(array('token_id' => Auth::user()->token_id, 'token_key' => Auth::user()->token_key));
+      }
+  });
+
+  Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
       Route::post('wakeOnLan', 'ApiController@wakeOnLan');
       Route::post('temperature', 'ApiController@temperature');
+      Route::post('alarms/{device}', 'ApiController@alarms');
+      Route::post('alarm/up/{device}', 'ApiController@alarm');
+
+      Route::get('devices', 'ApiController@devices');
+      Route::get('device/{device}', 'ApiController@device');
+
   });
   Route::get('/local', 'LocalController@index');
   Route::get('/localinfo', 'LocalController@info');

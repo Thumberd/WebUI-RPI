@@ -9,12 +9,12 @@ var LocalInfo = React.createClass({
       url: "/localinfo",
       data: { _token: this.props.token },
       success: function (data) {
-        if (data.indexOf("false") > -1){
+        if (data.indexOf("false") > -1) {
           return;
         }
         var res = JSON.parse(data);
-        for(var k in res) {
-          this.setState({color: res[k].split('*')[0], info: res[k].split('*')[1]});
+        for (var k in res) {
+          this.setState({ color: res[k].split('*')[0], info: res[k].split('*')[1] });
         }
       }.bind(this),
       error: function (xhr, status, err) {
@@ -27,27 +27,6 @@ var LocalInfo = React.createClass({
     setInterval(this.loadInfo, 5000);
   },
   render: function () {
-    return React.createElement(
-      "div",
-      { "className": "col s12 m6 l12" },
-      React.createElement(
-        "div",
-        { "className": "card " + this.state.color + " lighten-3" },
-        React.createElement(
-          "div",
-          { "className": "card-content white-text" },
-          React.createElement(
-            "span",
-            { "className": "card-title" },
-            "Info"
-          ),
-          React.createElement(
-            "p",
-            null,
-            this.state.info
-          )
-        )
-      )
-    );
+    return React.createElement("div", { "className": "col s12 m6 l12" }, React.createElement("div", { "className": "card " + this.state.color + " lighten-3" }, React.createElement("div", { "className": "card-content white-text" }, React.createElement("span", { "className": "card-title" }, "Info"), React.createElement("p", null, this.state.info))));
   }
 });

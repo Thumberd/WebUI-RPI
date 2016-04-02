@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Device;
+use App\Alarm;
 
 class DeviceController extends Controller
 {
@@ -32,6 +33,13 @@ class DeviceController extends Controller
       $device->type = $request->type;
       $device->ip = $request->ip;
       $device->save();
+
+      if ($device->type == '2'){
+        $alarm = new Alarm;
+        $alarm->device_id = $device->id;
+        $alarm->state = '0';
+        $alarm->save();
+      }
 
       return redirect('/devices');
     }

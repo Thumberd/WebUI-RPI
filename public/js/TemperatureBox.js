@@ -9,7 +9,11 @@ var TemperatureBox = React.createClass({
   loadTemp: function loadTemp() {
     $.post({
       url: "/api/v1/temperature",
-      data: { _token: this.props.token, id: this.props.id },
+      data: { id: this.props.id },
+      headers: {
+        'Token-Id': this.props.tokenID,
+        'Token-Key': this.props.tokenKey
+      },
       success: function (data) {
         this.setState({ temp: data['value'] });
       }.bind(this),

@@ -7,13 +7,23 @@
     <div class="card orange lighten-3">
       <div class="card-content white-text">
         <span class="card-title">Panel</span>
-        <p>Infos générales {{Request::ip()}}</p>
+        <p>Infos générales</p>
       </div>
     </div>
   </div>
 
-   <div class="col s4 " id="AlarmBox">
-     <!-- Alarm State -->
+   <div class="col s4 " id="**AlarmBox">
+     <div class="card indigo lighten-4">
+       <table>
+       <tbody id="Alarms">
+         @foreach($alarms as $alarm)
+          <tr id="alarm{{ $alarm->id }}">
+
+          </tr>
+         @endforeach
+       </tbody>
+     </table>
+     </div>
    </div>
 
    <div class="col s4">
@@ -67,12 +77,17 @@
 <script src="/js/wakeOnLan.js"></script>
 <script src="/js/TemperatureBox.js"></script>
 <script>
-  ReactDOM.render(React.createElement(AlarmBox, {token: "{!! csrf_token() !!}" }), document.getElementById('AlarmBox'));
   @foreach ($wakeOnLan as $wol)
-    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", token: "{!! csrf_token() !!}"}), document.getElementById('wol{{ $wol->id }}'));
+    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('wol{{ $wol->id }}'));
   @endforeach
   @foreach ($temperaturesDevices as $temperaturesDevice)
-    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", name: "{{ $temperaturesDevice->name }}", token: "{!! csrf_token() !!}"}), document.getElementById('TemperatureBox'));
+    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", name: "{{ $temperaturesDevice->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('TemperatureBox'));
   @endforeach
+  @foreach ($alarms as $alarm)
+    ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
+  @endforeach
+  $('#check9').click(function(){
+    $(this).prop('checked', true);
+});
 </script>
 @endsection
