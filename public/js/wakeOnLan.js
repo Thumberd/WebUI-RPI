@@ -22,7 +22,7 @@ var wakeOnLan = React.createClass({
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());
-        Materialize.toast(err.toString(), 4000);
+        this.setState({ color: "red darken-3", text: "ERREUR API" });
       }.bind(this)
     });
   },

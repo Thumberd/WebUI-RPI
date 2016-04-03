@@ -17,8 +17,9 @@
        <table>
        <tbody id="Alarms">
          @foreach($alarms as $alarm)
-          <tr id="alarm{{ $alarm->id }}">
-
+          <tr>
+            <td>{{ $alarm->device->name }}</td>
+            <td id="alarm{{ $alarm->id }}"></td>
           </tr>
          @endforeach
        </tbody>
@@ -86,8 +87,6 @@
   @foreach ($alarms as $alarm)
     ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
   @endforeach
-  $('#check9').click(function(){
-    $(this).prop('checked', true);
-});
+
 </script>
 @endsection

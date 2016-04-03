@@ -16,6 +16,7 @@ class APIMiddleware
      */
     public function handle($request, Closure $next)
     {
+      if (!empty($request->header('Token_Id'))) {
         $user = App\User::where('token_id', $request->header('Token_Id'))->first();
         if($user) {
           if($user->token_key == $request->header('token-key')){
@@ -23,5 +24,9 @@ class APIMiddleware
           }
         }
         return App::abort(403, "Forbidden");
+      }
+      else {
+        return App::abort(403, "Forbidden");
+      }
     }
 }
