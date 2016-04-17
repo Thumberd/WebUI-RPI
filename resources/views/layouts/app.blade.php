@@ -34,6 +34,7 @@
           <li><a href="{{ url('/login') }}">Login</a></li>
           <li><a href="{{ url('/register') }}">Register</a></li>
         @else
+          <li><a href="{{ url('/panel') }}">Panel</a></li>
           <li><a href="{{ url('/devices') }}">Devices</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
           <!-- Dropdown Structure -->

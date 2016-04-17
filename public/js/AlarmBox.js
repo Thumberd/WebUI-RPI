@@ -26,23 +26,31 @@ var AlarmBox = React.createClass({
       }.bind(this)
     });
   },
-  handleClick: function handleClick() {
-    console.log('tes');
-    $.post({
-      url: "/api/v1/alarm/up/" + this.props.id,
-      headers: {
-        "Token-Id": this.props.tokenID,
-        "Token-Key": this.props.tokenKey
-      },
-      success: function (data) {
-         Materialize.toast('Succès', 4000);
-      }.bind(this),
-      error: function (xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-        Materialize.toast('An error occured', 4000);
-      }.bind(this)
-    });
+  setUp: function setUp() {
+    $.ajax({
+        method: "POST",
+        url: "/api/v1/alarm/up/" + this.props.id,
+        headers: {
+          "Token-Id": this.props.tokenID,
+          "Token-Key": this.props.tokenKey
+        },
+        success: function (data) {
+           Materialize.toast('Succ  s', 4000);
+        }.bind(this),
+        error: function (xhr, status, err) {
+         console.error(this.props.url, status, err.toString());
+         Materialize.toast('An error occured', 4000);
+        }.bind(this),
+      });
   },
+  handleClick: function handleClick() {
+    if (this.state.etat == false) {
+       setTimeout(this.setUp, 10000);
+    }
+    else {
+      this.setUp();
+    }
+   },
   componentDidMount: function componentDidMount() {
     this.loadState();
     setInterval(this.loadState, 10000);

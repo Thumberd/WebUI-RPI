@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\User;
 use Auth;
+use App\Apifree;
 
 class ProfileController extends Controller
 {
@@ -17,6 +18,9 @@ class ProfileController extends Controller
 
     public function index (Request $req){
       $apifree = Auth::user()->apifree;
+      if (!$apifree) {
+        $apifree = array('user' => "/ ",'key' =>"/ ");
+      }
       return view('profile.index', ['apifree' => $apifree]);
     }
 
@@ -37,10 +41,20 @@ class ProfileController extends Controller
         'user' => 'required|max:255',
         'password' => 'required|max:255'
       ]);
-      $user = $req->user();
-      $user->apifree->user = $req->user;
-      $user->apifree->key = $req->password;
-      $user->push();
+      $apifree = Apifree::where('user_id', Auth::user()->id)->get();
+      if(!isset($apifree->user)){
+        $apifree = new Apifree;
+        $apifree->user_id = Auth::user()->id;
+        $apifree->user = $req->input('user');
+        $apifree->key = $req->input('password');
+        $apifree->save();
+      }
+      else {
+        $user = Auth::user();
+        $user->apifree->user = $req->input('user');
+        $user->apifree->key = $req->input('key');
+        $user->push();
+      }
       return redirect('/profile');
     }
 }

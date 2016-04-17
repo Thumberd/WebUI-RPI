@@ -58,11 +58,11 @@
                   <form action="{{ url('/profile/apifree') }}" method="POST" class="form-horizontal">
                      {!! csrf_field() !!}
                      <div class="input-field col s4 valign">
-                       <input id="user" name="user" type="text" class="validate" value="{{ Auth::user()->apifree->user }}"/>
+                       <input id="user" name="user" type="text" class="validate" value="{{ $apifree->user or ' ' }}"/>
                        <label for="user">User</label>
                      </div>
                      <div class="input-field col s4 valign">
-                       <input id="password" name="password" type="text" class="validate" value="{{ Auth::user()->apifree->key }}"/>
+                       <input id="password" name="password" type="text" class="validate" value="{{ $apifree->key or ' ' }}"/>
                        <label for="password">Password</label>
                      </div>
                     <div class="input-field col s4 valign">

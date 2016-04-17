@@ -59,7 +59,10 @@ Route::group(['middleware' => ['web']], function () {
   });
   Route::get('/local', 'LocalController@index');
   Route::get('/localinfo', 'LocalController@info');
-  Route::auth();
+  //Route::auth();
+  Route::get('/login', array('as' => 'login', 'uses' => 'Auth\AuthController@getLogin'));
+  Route::post('/login', array('as' => 'login', 'uses' => 'Auth\AuthController@postLogin'));
+  Route::get('/logout', array('as' => 'logout', 'uses' => 'Auth\AuthController@getLogout'));
 });
 
 // Route::group(['middleware' => ['localhost']], function () {
