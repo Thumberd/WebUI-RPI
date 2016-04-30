@@ -26,7 +26,7 @@
 </head>
 <body id="app-layout">
   <nav>
-    <div class="nav-wrapper">
+    <div class="nav-wrapper grey darken-1">
       <a href="#" class="brand-logo center">Raspberry Pi</a>
       <ul id="nav-mobile" class="left hide-on-med-and-down">
         <li><a href="{{ url('/') }}">Home</a></li>

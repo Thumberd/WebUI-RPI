@@ -4,7 +4,7 @@
 
 <div class="row">
   <div class="col s12 m6 l12">
-    <div class="card orange lighten-3">
+    <div class="card teal">
       <div class="card-content white-text">
         <span class="card-title">Panel</span>
         <p>Infos générales</p>
@@ -12,8 +12,10 @@
     </div>
   </div>
 
-   <div class="col s4 " id="**AlarmBox">
-     <div class="card indigo lighten-4">
+   <div class="col s4 white-text" id="**AlarmBox">
+     <div class="card grey">
+	<div class="card-content">
+	<span class="card-title">Alarme</span>
        <table>
        <tbody id="Alarms">
          @foreach($alarms as $alarm)
@@ -25,10 +27,11 @@
        </tbody>
      </table>
      </div>
+     </div>
    </div>
 
    <div class="col s4">
-     <div class="card grey darken-3">
+     <div class="card grey">
        <div class="card-content white-text">
          <span class="card-title">Wake On Lan</span>
          <table>
@@ -53,8 +56,8 @@
     </div>
 
     <div class="col s4">
-      <div class="card grey lighten-3">
-        <div class="card-content black-text">
+      <div class="card grey">
+        <div class="card-content white-text">
           <span class="card-title">Temperature</span>
           <table>
            <thead>

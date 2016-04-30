@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | Routes File
@@ -55,7 +54,7 @@ Route::group(['middleware' => ['web']], function () {
 
       Route::get('devices', 'ApiController@devices');
       Route::get('device/{device}', 'ApiController@device');
-
+      Route::post('device/gen_token/{device}', 'ApiController@deviceGenerateToken');
   });
   Route::get('/local', 'LocalController@index');
   Route::get('/localinfo', 'LocalController@info');

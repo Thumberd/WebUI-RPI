@@ -3,11 +3,10 @@
 @section('content')
     <!-- Create Task Form... -->
 
-    <!-- Display Validation Errors -->
-       @include('common.errors')
+@include('common.errors')
 <div class="row">
   <div class="col s12 m6 l12">
-    <div class="card blue-grey darken-1">
+    <div class="card teal">
       <div class="card-content white-text">
         <span class="card-title">Devices</span>
         <p>Ici se trouve la liste de tous les périhpériques.</p>
@@ -17,8 +16,8 @@
 
   <!-- Current Devices -->
   @if (count($devices) > 0)
-  <div class="col s8">
-    <div class="card blue-grey darken-1">
+  <div class="col s12">
+    <div class="card grey">
       <div class="card-content white-text">
         <span class="card-title">Devices</span>
         <table>
@@ -27,6 +26,8 @@
                 <th data-field="id">Id</th>
                 <th data-field="name">Name</th>
                 <th data-field="code">Code / IP</th>
+		<th data-field="user">User / Password</th>
+		<th data-field="api">API token</th>
                 <th data-field="delete"> </th>
             </tr>
           </thead>
@@ -50,16 +51,23 @@
                    {{ $device->name }}
                 </td>
                 <td>
-                  {{ $device->code }} / {{ $device->ip }}
+                  {{ $device->code or '/' }} / {{ $device->ip or '/' }}
                 </td>
+		<td>
+		 {{ $device->user or '/' }}:{{ $device->password or '/' }}
+		</td>
+		<td>
+		ID:  {{ $device->token_id or '/' }}<br /> Key: {{ $device->token_key or '/' }}
+		</td>
                 <td>
                   <form action="{{ url('device/'.$device->id) }}" method="POST">
                     {!! csrf_field() !!}
                     {!! method_field('DELETE') !!}
                     <button type="submit" class="waves-effect waves-teal btn red" id="delete-task-{{ $device->id }}">
-                        <i class="fa fa-trash left"></i> Supprimer
+                        <i class="fa fa-trash"></i>
                     </button>
                   </form>
+		  <a href="" class="waves-effect waves-teal btn teal" onclick="generateToken({{ $device->id }})"><i class="fa fa-repeat"></i></a>
                 </td>
               </tr>
               @endforeach
@@ -69,15 +77,15 @@
     </div>
   </div>
   @endif
-   <div class="col s4 ">
+   <div class="col s12 ">
      <!-- New Task Form -->
-     <div class="card grey lighten-3">
-       <div class="card-content black-text">
+     <div class="card grey ">
+       <div class="card-content white-text">
          <span class="card-title">Ajout</span>
            <form action="{{ url('/device') }}" method="POST" class="form-horizontal">
               {!! csrf_field() !!}
               <div class="row">
-                <div class="input-field col s8">
+                <div class="input-field col s12">
                   <input id="name" type="text" name="name" class="validate">
                   <label for="name">Name</label>
                 </div>
@@ -107,4 +115,26 @@
        </div>
    </div>
 </div>
+@endsection
+
+
+@section('JS')
+<script>
+function generateToken(id){
+	$.post({
+		url: "/api/v1/device/gen_token/" + id,
+		headers: {
+			"Token-Id": "{{ Auth::user()->token_id }}",
+			"Token-Key": "{{ Auth::user()->token_key }}"
+		},
+		success: function(data) {
+			console.log(data);
+		}.bind(this),
+		error: function(xhr, status, err){
+			console.error(status, err.toString());
+		}.bind(this)
+	});
+	
+}
+</script>
 @endsection

@@ -32,6 +32,8 @@ class DeviceController extends Controller
       $device->code = $request->code;
       $device->type = $request->type;
       $device->ip = $request->ip;
+      $device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
+      $device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
       $device->save();
 
       if ($device->type == '2'){

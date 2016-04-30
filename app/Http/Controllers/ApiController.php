@@ -63,4 +63,9 @@ class ApiController extends Controller
     public function device(Request $req, Device $device){
       return json_encode($device);
     }
+    public function deviceGenerateToken(Request $req, Device $device){
+	$device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
+	$device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
+	$device->save();
+    }
 }

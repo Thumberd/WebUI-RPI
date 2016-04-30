@@ -23,10 +23,18 @@ class APIMiddleware
             return $next($request);
           }
         }
-        return App::abort(403, "Forbidden");
+	else {
+	        return App::abort(403, "Forbidden");
+	}
+      }
+      else if (!empty($request->header('Device-Id'))){
+	$device = App\Device::where('token_id', $request->header('Device-Id'))->first();
+	if ($device AND $device->token_key == $request->header('Device-Key')) {
+		return $next($request);
+	}
       }
       else {
-        return App::abort(403, "Forbidden");
+	return App::abort(403, "Forbidden");
       }
     }
 }
