@@ -8,6 +8,8 @@ use App\Http\Requests;
 use App\Device;
 use App\Temperature;
 use App\Alarm;
+use App;
+use App\Event;
 
 class ApiController extends Controller
 {
@@ -63,9 +65,29 @@ class ApiController extends Controller
     public function device(Request $req, Device $device){
       return json_encode($device);
     }
+
+
     public function deviceGenerateToken(Request $req, Device $device){
 	$device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
 	$device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
 	$device->save();
     }
+    
+    //Events Api
+	//Get
+	public function getEvent(Request $req){
+		if (!empty($req->header('Token-Id'))) {
+			$user = App\User::where('token_id', $req->header('Token-Id'))->first();
+			if ($user AND $user->token_key == $req->header('Token-Key')) {
+				$events = App\Event ::where('user_id', $user->id)->where('read', 0)->get();
+				echo $events;
+			}
+		}
+	}
+
+	//Set an event as read
+	public function eventRead(Request $req, Event $event) {
+		$event->read = true;
+		$event->save();
+	}
 }

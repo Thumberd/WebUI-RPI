@@ -3,16 +3,9 @@
 @section('content')
 
 <div class="row">
-  <div class="col s12 m6 l12">
-    <div class="card teal">
-      <div class="card-content white-text">
-        <span class="card-title">Panel</span>
-        <p>Infos générales</p>
-      </div>
-    </div>
+  <div class="col s12 m6 l12" id="Event">
   </div>
-
-   <div class="col s4 white-text" id="**AlarmBox">
+   <div class="col s12 m4 white-text" id="**AlarmBox">
      <div class="card grey">
 	<div class="card-content">
 	<span class="card-title">Alarme</span>
@@ -30,7 +23,7 @@
      </div>
    </div>
 
-   <div class="col s4">
+   <div class="col s12 m4">
      <div class="card grey">
        <div class="card-content white-text">
          <span class="card-title">Wake On Lan</span>
@@ -55,7 +48,7 @@
      </div>
     </div>
 
-    <div class="col s4">
+    <div class="col s12 m4">
       <div class="card grey">
         <div class="card-content white-text">
           <span class="card-title">Temperature</span>
@@ -80,7 +73,9 @@
 <script src="/js/AlarmBox.js"></script>
 <script src="/js/wakeOnLan.js"></script>
 <script src="/js/TemperatureBox.js"></script>
+<script src="/js/Event.js"></script>
 <script>
+ ReactDOM.render(React.createElement(Event, {tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key}}"}), document.getElementById('Event'));
   @foreach ($wakeOnLan as $wol)
     ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('wol{{ $wol->id }}'));
   @endforeach

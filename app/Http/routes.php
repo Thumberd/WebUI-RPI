@@ -46,16 +46,7 @@ Route::group(['middleware' => ['web']], function () {
       }
   });
 
-  Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
-      Route::post('wakeOnLan', 'ApiController@wakeOnLan');
-      Route::post('temperature', 'ApiController@temperature');
-      Route::post('alarms/{device}', 'ApiController@alarms');
-      Route::post('alarm/up/{device}', 'ApiController@alarm');
 
-      Route::get('devices', 'ApiController@devices');
-      Route::get('device/{device}', 'ApiController@device');
-      Route::post('device/gen_token/{device}', 'ApiController@deviceGenerateToken');
-  });
   Route::get('/local', 'LocalController@index');
   Route::get('/localinfo', 'LocalController@info');
   //Route::auth();
@@ -68,3 +59,17 @@ Route::group(['middleware' => ['web']], function () {
 //   Route::get('/local', 'LocalController@index');
 //   Route::get('/localinfo', 'LocalController@info');
 // });
+Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function() {
+      Route::post('wakeOnLan', 'ApiController@wakeOnLan');
+      Route::post('temperature', 'ApiController@temperature');
+      Route::post('alarms/{device}', 'ApiController@alarms');
+      Route::post('alarm/up/{device}', 'ApiController@alarm');
+
+      Route::get('devices', 'ApiController@devices');
+      Route::get('device/{device}', 'ApiController@device');
+      Route::post('device/gen_token/{device}', 'ApiController@deviceGenerateToken');
+
+      Route::get('events', 'ApiController@getEvent');
+      Route::post('event/{event}/read', 'ApiController@eventRead');
+  });
+

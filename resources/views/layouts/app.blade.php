@@ -28,7 +28,7 @@
   <nav>
     <div class="nav-wrapper grey darken-1">
       <a href="#" class="brand-logo center">Raspberry Pi</a>
-      <ul id="nav-mobile" class="left hide-on-med-and-down">
+      <ul id="nav-mobile" class="left">
         <li><a href="{{ url('/') }}">Home</a></li>
         @if (Auth::guest())
           <li><a href="{{ url('/login') }}">Login</a></li>
@@ -44,6 +44,7 @@
           </ul>
         @endif
       </ul>
+      <a href="#" data-activates="slide-out" class="button-collapse">L</a>
     </div>
   </nav>
 
@@ -62,8 +63,10 @@
       $( document ).ready(function(){
         $(".dropdown-button").dropdown();
       });
+	$('.button-collapse').sideNav();
     </script>
 
     @yield('JS')
 </body>
 </html>
+
