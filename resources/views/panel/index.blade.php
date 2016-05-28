@@ -67,6 +67,27 @@
         </div>
       </div>
     </div>
+
+    <div class="col s12 m4">
+      <div class="card grey">
+        <div class="card-content white-text">
+          <span class="card-title">Garage</span>
+          <table>
+           <thead>
+             <tr>
+                 <th data-field="id">Name</th>
+                 <th data-field="value">State</th>
+             </tr>
+           </thead>
+
+           <tbody id="GarageBox">
+		A
+           </tbody>
+         </table>
+        </div>
+      </div>
+    </div>
+
 @endsection
 
 @section('JS')
@@ -74,6 +95,7 @@
 <script src="/js/wakeOnLan.js"></script>
 <script src="/js/TemperatureBox.js"></script>
 <script src="/js/Event.js"></script>
+<script src="/js/GarageBox.js"></script>
 <script>
  ReactDOM.render(React.createElement(Event, {tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key}}"}), document.getElementById('Event'));
   @foreach ($wakeOnLan as $wol)
@@ -85,6 +107,8 @@
   @foreach ($alarms as $alarm)
     ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
   @endforeach
-
+  @foreach ($garages as $garage)
+    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}", tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key }}"}, document.getElementById('GarageBox')));
+  @endforeach
 </script>
 @endsection

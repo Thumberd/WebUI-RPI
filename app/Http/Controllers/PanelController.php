@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Apifree;
 use App\Device;
 use App\Alarm;
+use App\Garage;
 
 class PanelController extends Controller
 {
@@ -20,6 +21,10 @@ class PanelController extends Controller
       $alarms = Alarm::all();
       $wakeOnLan = Device::where('type', 3)->get();
       $temperaturesDevices = Device::where('type', 4)->get();
-      return view('panel.index', ['api' => $api, 'wakeOnLan' => $wakeOnLan, 'temperaturesDevices' => $temperaturesDevices, 'alarms' => $alarms]);
+      $garages = Garage::all();
+      return view('panel.index', ['api' => $api, 'wakeOnLan' => $wakeOnLan, 'temperaturesDevices' => $temperaturesDevices, 'alarms' => $alarms, 'garages' => $garages]);
+    }
+    public function timelapse(Request $req) {
+	return View('panel.timelapse', []);
     }
 }

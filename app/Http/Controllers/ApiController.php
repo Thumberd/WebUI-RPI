@@ -10,6 +10,8 @@ use App\Temperature;
 use App\Alarm;
 use App;
 use App\Event;
+use App\Apifree;
+use App\Garage;
 
 class ApiController extends Controller
 {
@@ -71,6 +73,7 @@ class ApiController extends Controller
 	$device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
 	$device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
 	$device->save();
+	return json_encode($device);
     }
     
     //Events Api
@@ -89,5 +92,27 @@ class ApiController extends Controller
 	public function eventRead(Request $req, Event $event) {
 		$event->read = true;
 		$event->save();
+	}
+
+    //Apifree API
+	//GET
+	public function apiFrees(Request $req){
+		return Apifree::all();
+	}
+
+    //Garages API
+	//GET
+	public function garages(Request $req){
+		return Garage::all();
+	}
+	
+	public function garage(Request $req, Garage $g){
+		return json_encode($g);
+	}
+	//UPDATE
+	public function garageup(Request $req, Garage $g){
+		$g->state = $req->input('state');
+		$g->save();
+		return $g;
 	}
 }

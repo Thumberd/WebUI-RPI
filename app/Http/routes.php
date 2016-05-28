@@ -27,6 +27,7 @@ Route::group(['middleware' => ['web']], function () {
       return view('welcome');
   });
   Route::get('/panel', 'PanelController@index');
+  Route::get('/timelapse', 'PanelController@timelapse');
 
   Route::get('/profile', 'ProfileController@index');
   Route::post('/profile/mail', 'ProfileController@storeMail');
@@ -71,5 +72,15 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function() {
 
       Route::get('events', 'ApiController@getEvent');
       Route::post('event/{event}/read', 'ApiController@eventRead');
+
+      Route::get('apifrees', 'ApiController@apifrees');
+
+      Route::get('garages', 'ApiController@garages');
+      Route::get('garage/{g}', 'ApiController@garage');
+      Route::post('garage/{g}', 'ApiController@garageup');
+
+      Route::get('ping', function(Request $req){
+	return 'Pong';
+	});
   });
 

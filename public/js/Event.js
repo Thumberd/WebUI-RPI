@@ -27,6 +27,10 @@ var Event = React.createClass({
     this.getEvents();
     setInterval(this.getEvents, 10000);
   },
+  readAndUpdate: function readAndUpdate(){
+    this.read();
+    this.getEvents();
+  },
   read: function read(){
     $.post({
       url: "/api/v1/event/" + this.state.events[0]['id'] + "/read",
@@ -45,7 +49,7 @@ var Event = React.createClass({
   },
   render: function render() {
 	if(typeof this.state.events[0] != "undefined") {
-	    return React.createElement("div", { "className": "card teal" }, React.createElement("div", { "className": "card-content white-text" }, React.createElement("span", { "className": "card-title" }, this.state.events[0]['title']), React.createElement("p", null, this.state.events[0]['created_at'] + " [" + this.state.events[0]['fired_by'] + "]: " + this.state.events[0]['message']),  React.createElement("a", { onClick: this.read}, "Lu !")));
+	    return React.createElement("div", { "className": "card teal" }, React.createElement("div", { "className": "card-content white-text" }, React.createElement("span", { "className": "card-title" }, this.state.events[0]['title']), React.createElement("p", null, this.state.events[0]['created_at'] + " [" + this.state.events[0]['fired_by'] + "]: " + this.state.events[0]['message']),  React.createElement("a", { onClick: this.readAndUpdate, 'className': 'waves-effect waves-light btn grey'}, "Lu !")));
 	} else {
 	    return React.createElement("div", { "className": "card teal" }, React.createElement("div", { "className": "card-content white-text" }, React.createElement("span", { "className": "card-title" }, "Panel"), React.createElement('p', null, "Infos generales")));
 	}
