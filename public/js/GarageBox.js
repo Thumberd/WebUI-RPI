@@ -7,6 +7,7 @@ var GarageBox = React.createClass({
     return { state: "" };
   },
   loadState: function loadState() {
+    console.log(this.props.id);
     $.get({
       url: "/api/v1/garage/" + this.props.id,
       headers: {
@@ -14,7 +15,8 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        this.setState({ state: data['state'] });
+	console.log(JSON.parse(data))
+        this.setState({ state: JSON.parse(data)['state'] });
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());

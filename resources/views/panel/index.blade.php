@@ -81,7 +81,11 @@
            </thead>
 
            <tbody id="GarageBox">
-		A
+		@foreach($garages as $garage)
+	          <tr id="garage{{ $garage->id }}">
+	            
+                  </tr>
+        	 @endforeach
            </tbody>
          </table>
         </div>
@@ -108,7 +112,7 @@
     ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
   @endforeach
   @foreach ($garages as $garage)
-    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}", tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key }}"}, document.getElementById('GarageBox')));
+    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}", tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('garage{{ $garage->id }}'));
   @endforeach
 </script>
 @endsection

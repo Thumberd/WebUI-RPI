@@ -103,7 +103,7 @@ class ApiController extends Controller
     //Garages API
 	//GET
 	public function garages(Request $req){
-		return Garage::all();
+		return json_encode(Garage::all());
 	}
 	
 	public function garage(Request $req, Garage $g){

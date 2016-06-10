@@ -37,6 +37,9 @@ Route::group(['middleware' => ['web']], function () {
   Route::post('/device', 'DeviceController@store');
   Route::delete('/device/{device}', 'DeviceController@delete');
 
+  Route::get('/alarms/scheduled', 'DeviceController@ScheduledAlarms');
+  Route::post('/alarms/scheduled/add', 'DeviceController@addScheduled');
+
   Route::post('token', function (Request $req){
     if (Auth::once(['email' => $req->input('email'), 'password' => $req->input('password')]))
       {

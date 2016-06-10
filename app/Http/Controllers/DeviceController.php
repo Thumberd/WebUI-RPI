@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Device;
 use App\Alarm;
+use App\Scheduled;
 
 class DeviceController extends Controller
 {
@@ -50,5 +51,19 @@ class DeviceController extends Controller
       $device->delete();
       return redirect('/devices');
     }
+    public function ScheduledAlarms(Request $req){
+	$scheduled = Scheduled::all();
+	return view('device.scheduled', ['scheduled' => $scheduled]);
+    }
 
+    public function addScheduled(Request $req){
+	$scheduled = new Scheduled;
+	$scheduled->alarm_id = $req->alarmId;
+	$scheduled->beginHour = $req->beginHour;
+	$scheduled->beginminute = $req->beginMinute;
+	$scheduled->endHour = $req->endHour;
+	$scheduled->endMinute = $req->endMinute;
+	$scheduled->save();
+    }
 }
+
