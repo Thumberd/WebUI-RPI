@@ -60,8 +60,13 @@
              </tr>
            </thead>
 
-           <tbody id="TemperatureBox">
-
+           <tbody>
+		@foreach($temperaturesDevices as $tempDevice)
+		<tr>
+			<td><i class="fa fa-leaf"></i> {{ $tempDevice->name }}</td>
+			<td id="temp{{ $tempDevice->id }}"></td>
+		</tr>
+		@endforeach
            </tbody>
          </table>
         </div>
@@ -106,7 +111,7 @@
     ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('wol{{ $wol->id }}'));
   @endforeach
   @foreach ($temperaturesDevices as $temperaturesDevice)
-    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", name: "{{ $temperaturesDevice->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('TemperatureBox'));
+    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('temp{{ $temperaturesDevice->id }}'));
   @endforeach
   @foreach ($alarms as $alarm)
     ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));

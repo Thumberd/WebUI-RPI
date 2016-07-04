@@ -27,6 +27,6 @@ var TemperatureBox = React.createClass({
     setInterval(this.loadTemp, 300000);
   },
   render: function render() {
-    return React.createElement("tr", null, React.createElement("td", null, React.createElement("i", { className: "fa fa-leaf" }), " ", this.props.name), React.createElement("td", null, " ", this.state.temp));
+    return React.createElement("p", null, " ", this.state.temp);
   }
 });
