@@ -69,6 +69,12 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function() {
       Route::post('alarms/{device}', 'ApiController@alarms');
       Route::post('alarm/up/{device}', 'ApiController@alarm');
 
+      Route::post('temperature/add', 'ApiController@addTemperature');
+
+      Route::post('humidity', 'ApiController@addHumidity');
+
+      Route::post('plant-humidity', 'ApiController@addPlantHumidity');
+
       Route::get('devices', 'ApiController@devices');
       Route::get('device/{device}', 'ApiController@device');
       Route::post('device/gen_token/{device}', 'ApiController@deviceGenerateToken');
