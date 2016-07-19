@@ -47,14 +47,14 @@ class ApiController extends Controller
 
     public function getAllTemperatures(Request $req){
         $devices = Device::all();
-        $deviceTemperature = "";
+        echo'[';
         foreach ($devices as $device){
             if ($device->type == '4'){
                 $temperature = Temperature::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
-                echo $temperature;
+                echo $temperature . ',';
             }
         }
-        return json_encode($deviceTemperature);
+        echo ']';
     }
 
     public function postTemperature(Request $req)
