@@ -87,7 +87,7 @@ class ApiController extends Controller
         foreach ($devices as $device){
             if ($device->type == '4'){
                 $humidity = Humidity::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
-                $devicesHumiditys += $humidity;
+                $devicesHumiditys += json_encode($humidity);
             }
         }
         return json_encode($devicesHumiditys);
