@@ -8,7 +8,7 @@ var Event = React.createClass({
   },
   getEvents: function loadState() {
     $.get({
-      url: "/api/v1/events",
+      url: "/api/v2/events",
       data: {},
       headers: {
         "Token-Id": this.props.tokenID,

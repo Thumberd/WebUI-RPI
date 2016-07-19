@@ -8,7 +8,7 @@ var AlarmBox = React.createClass({
   },
   loadState: function loadState() {
     $.post({
-      url: "/api/v1/alarms/" + this.props.id,
+      url: "/api/v2/alarm/" + this.props.id,
       headers: {
         "Token-Id": this.props.tokenID,
         "Token-Key": this.props.tokenKey
@@ -29,13 +29,13 @@ var AlarmBox = React.createClass({
   setUp: function setUp() {
     $.ajax({
         method: "POST",
-        url: "/api/v1/alarm/up/" + this.props.id,
+        url: "/api/v2/alarm/" + this.props.id,
         headers: {
           "Token-Id": this.props.tokenID,
           "Token-Key": this.props.tokenKey
         },
         success: function (data) {
-           Materialize.toast('Succ  s', 4000);
+           Materialize.toast('Succès', 4000);
         }.bind(this),
         error: function (xhr, status, err) {
          console.error(this.props.url, status, err.toString());

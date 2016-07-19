@@ -7,9 +7,8 @@ var TemperatureBox = React.createClass({
     return { temp: "", bg : "inherit"};
   },
   loadTemp: function loadTemp() {
-    $.post({
-      url: "/api/v1/temperature",
-      data: { id: this.props.id },
+    $.get({
+      url: "/api/v2/temperature/" + this.props.id,
       headers: {
         'Token-Id': this.props.tokenID,
         'Token-Key': this.props.tokenKey

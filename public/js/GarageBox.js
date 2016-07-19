@@ -9,7 +9,7 @@ var GarageBox = React.createClass({
   loadState: function loadState() {
     console.log(this.props.id);
     $.get({
-      url: "/api/v1/garage/" + this.props.id,
+      url: "/api/v2/garage/" + this.props.id,
       headers: {
         'Token-Id': this.props.tokenID,
         'Token-Key': this.props.tokenKey
