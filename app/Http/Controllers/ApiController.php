@@ -42,6 +42,7 @@ class ApiController extends Controller
             $temperature = Temperature::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
             return json_encode($temperature);
         }
+        abort(406, 'Error: Device unable to save that type of data.');
     }
 
     public function getAllTemperatures(Request $req){
