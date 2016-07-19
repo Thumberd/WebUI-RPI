@@ -181,9 +181,9 @@ class ApiController extends Controller
         abort(500, "Error");
     }
 
-    public function getSendAlarm(Request $req){
+    public function getSendAlarm(Request $req, Device $device){
         $c = new Celery('localhost', 'guest', 'guest', '/');
-        $c->PostTask('worker.alarm_protocol', array());
+        $c->PostTask('worker.alarm_protocol', $device->id);
     }
 
     public function getScheduledAlarms(Request $req){
