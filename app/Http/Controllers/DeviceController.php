@@ -51,7 +51,7 @@ class DeviceController extends Controller
       $device->delete();
       return redirect('/devices');
     }
-    public function ScheduledAlarms(Request $req){
+    public function scheduledAlarms(Request $req){
 	$scheduled = Scheduled::all();
 	return view('device.scheduled', ['scheduled' => $scheduled]);
     }

@@ -13,6 +13,7 @@
 		                <th data-field="name">Name</th>
                 		<th data-field="code">Begin Time</th>
 		                <th data-field="user">End Time</th>
+						<th data-field="delete"> </th>
 		            </tr>
 		          </thead>
 		          <tbody>
@@ -22,6 +23,15 @@
 				<td>{{ $sAlarm->alarm->device->name }}</td>
 				<td>{{ $sAlarm->beginHour }}:{{ $sAlarm->beginMinute }}</td>
 				<td>{{ $sAlarm->endHour }}:{{ $sAlarm->endMinute }}</td>
+                  <td>
+                      <form action="{{ url('api/v2/alarm/scheduled/' . $sAlarm->id) }}" method="POST">
+                          {!! csrf_field() !!}
+                          {!! method_field('DELETE') !!}
+                          <button type="submit" class="waves-effect waves-teal btn red">
+                              <i class="fa fa-trash"></i>
+                          </button>
+                      </form>
+                  </td>
 			      </tr>
 			    @endforeach
 		 	 </tbody>

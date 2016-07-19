@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- Create Task Form... -->
 
 @include('common.errors')
 <div class="row">
@@ -13,13 +12,52 @@
       </div>
     </div>
   </div>
+    <!-- Modal Trigger -->
 
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal modal-fixed-footer">
+        <form action="{{ url('/device') }}" method="POST" class="form-horizontal">
+        <div class="modal-content">
+            <h4>Ajout d'un périphérique</h4>
+                {!! csrf_field() !!}
+                <div class="row">
+                    <div class="input-field col s12">
+                        <input id="name" type="text" name="name" class="validate">
+                        <label for="name">Name</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input id="ip" type="text" name="ip"class="validate">
+                        <label for="ip">IP</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="code" type="text" name="code"class="validate">
+                        <label for="code">Code</label>
+                    </div>
+                    <div class="input-field col s6">
+                        <input id="type" type="number" name="type" class="validate">
+                        <label for="type">Type</label>
+                    </div>
+                </div>
+                <!-- Add Button -->
+                <div class="card-action">
+                    <button type="submit" class="btn btn-default">
+                        <i class="fa fa-plus left"></i> Ajouter
+                    </button>
+                </div>
+            </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button href="#!" type="submit" class="modal-action modal-close waves-effect waves-green btn-flat ">Ajouter</button>
+        </div>
+    </div>
   <!-- Current Devices -->
   @if (count($devices) > 0)
   <div class="col s12">
     <div class="card grey">
       <div class="card-content white-text">
-        <span class="card-title">Devices</span>
+        <span class="card-title">Devices  <a class="modal-trigger waves-effect waves-light btn" href="#modal1">Ajouter</a></span>
         <table>
           <thead>
             <tr>
@@ -77,44 +115,6 @@
     </div>
   </div>
   @endif
-   <div class="col s12 ">
-     <!-- New Task Form -->
-     <div class="card grey ">
-       <div class="card-content white-text">
-         <span class="card-title">Ajout</span>
-           <form action="{{ url('/device') }}" method="POST" class="form-horizontal">
-              {!! csrf_field() !!}
-              <div class="row">
-                <div class="input-field col s12">
-                  <input id="name" type="text" name="name" class="validate">
-                  <label for="name">Name</label>
-                </div>
-                <div class="input-field col s4">
-                  <input id="ip" type="text" name="ip"class="validate">
-                  <label for="ip">IP</label>
-                </div>
-                <div class="input-field col s6">
-                  <input id="code" type="text" name="code"class="validate">
-                  <label for="code">Code</label>
-                </div>
-                <div class="input-field col s6">
-                  <input id="type" type="number" name="type" class="validate">
-                  <label for="type">Type</label>
-                </div>
-              </div>
-               <!-- Add Button -->
-               <div class="card-action">
-                 <button type="submit" class="btn btn-default">
-                    <i class="fa fa-plus left"></i> Ajouter
-                 </button>
-                </div>
-              </div>
-             </div>
-           </form>
-         </div>
-       </div>
-   </div>
-</div>
 @endsection
 
 
@@ -128,7 +128,7 @@ function generateToken(id){
 			"Token-Key": "{{ Auth::user()->token_key }}"
 		},
 		success: function(data) {
-			console.log(data);
+			Materialize.Toast("Rafraichîr la page pour voir les changements.", 4000, "teal")
 		}.bind(this),
 		error: function(xhr, status, err){
 			console.error(status, err.toString());
