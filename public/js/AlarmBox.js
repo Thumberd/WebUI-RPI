@@ -7,13 +7,14 @@ var AlarmBox = React.createClass({
     return { etat: "", color:"", actual: "", action: "", link: ""};
   },
   loadState: function loadState() {
-    $.post({
+    $.get({
       url: "/api/v2/alarm/" + this.props.id,
       headers: {
         "Token-Id": this.props.tokenID,
         "Token-Key": this.props.tokenKey
       },
       success: function (data) {
+          data = JSON.parse(data);
         if (data['state'] == "0") {
           this.setState({ etat: false, color:"teal", colorSave: "teal", actual: "Désactivée", action: "Activer", link: "Désactivée"});
         } else if (data['state'] == '1') {
