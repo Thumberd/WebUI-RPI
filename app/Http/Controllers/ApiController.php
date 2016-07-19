@@ -51,7 +51,7 @@ class ApiController extends Controller
         foreach ($devices as $device){
             if ($device->type == '4'){
                 $temperature = Temperature::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
-                $deviceTemperature += $temperature;
+                echo $temperature;
             }
         }
         return json_encode($deviceTemperature);
