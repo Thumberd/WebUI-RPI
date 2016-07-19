@@ -55,6 +55,9 @@ class ApiController extends Controller
                 if ($first != false){
                     echo ',';
                 }
+                else {
+                    $first = true;
+                }
                 echo $temperature;
             }
         }
