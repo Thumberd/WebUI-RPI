@@ -119,6 +119,8 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         Route::post('alarm/{device}/scheduled', 'ApiController@postAddScheduled');
         //DELETE the scheduled alarms
         Route::delete('alarm/scheduled/{id}', 'ApiController@deleteScheduled');
+        //GET inform the system that a movement has been detected
+        Route::get('alarm/{device}/movement', 'ApiController@getSendAlarm');
 
 
     //Humidity

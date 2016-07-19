@@ -15,6 +15,7 @@ use App\Garage;
 use App\Humidity;
 use App\PHumidity;
 use App\Scheduled;
+use Celery;
 
 class ApiController extends Controller
 {
@@ -178,6 +179,11 @@ class ApiController extends Controller
             return 'Request success';
         }
         abort(500, "Error");
+    }
+
+    public function getSendAlarm(Request $req){
+        $c = new Celery('localhost', 'guest', 'guest', '/');
+        $c->PostTask('worker.alarm_protocol');
     }
 
     public function getScheduledAlarms(Request $req){
