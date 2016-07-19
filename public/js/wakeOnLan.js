@@ -8,7 +8,7 @@ var wakeOnLan = React.createClass({
   },
   powerOn: function powerOn(e) {
     $.ajax({
-      url: "/api/v1/wakeOnLan",
+      url: "/api/v2/wakeonlan",
       method: "POST",
       data: { id: this.props.id },
       headers: {
