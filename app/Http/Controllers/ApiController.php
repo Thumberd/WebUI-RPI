@@ -183,7 +183,7 @@ class ApiController extends Controller
 
     public function getSendAlarm(Request $req){
         $c = new Celery('localhost', 'guest', 'guest', '/');
-        $c->PostTask('worker.alarm_protocol');
+        $c->PostTask('worker.alarm_protocol', array());
     }
 
     public function getScheduledAlarms(Request $req){
