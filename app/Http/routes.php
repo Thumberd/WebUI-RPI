@@ -142,6 +142,8 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
     //Devices
         //GET "device"->device id
         Route::get('device/{device}', 'ApiController@getDevice');
+        //GET all devices
+        Route::get('devices', 'ApiController@getDevices');
         //POST re-generate token for the device
         Route::post('device/gen_token', 'ApiController@postDeviceGenerateToken');
 

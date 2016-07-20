@@ -209,6 +209,9 @@ class ApiController extends Controller
         return json_encode($device->makeHidden(['token_id', 'token_key'])->toArray());
     }
 
+    public function getDevices(Request $req){
+        return json_encode(Device::all());
+    }
 
     public function postDeviceGenerateToken(Request $req)
     {
