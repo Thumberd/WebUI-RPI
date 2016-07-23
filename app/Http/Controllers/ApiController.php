@@ -283,11 +283,20 @@ class ApiController extends Controller
         return json_encode($g);
     }
 
-    //UPDATE
     public function postGarageState(Request $req, Garage $g)
     {
         $g->state = $req->input('state');
         $g->save();
         return json_encode($g);
+    }
+
+    public function postGarageUp(Request $req, Garage $g){
+        $ip = $req->ip();
+        $user = App\User::where('token_id', $req->header('Token-Id'))->first();
+        $client = Device::where('ip', $ip);
+        if ($client){
+            $c = new Celery('localhost', 'guest', 'guest', '/');
+            $c->PostTask('worker.send_code_garage', array($g->id, $ip, $user->id));
+        }
     }
 }

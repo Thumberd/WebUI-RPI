@@ -166,6 +166,8 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         Route::get('garage/{g}', 'ApiController@getGarage');
         //POST "g"-> garage id, "state"-> state of the garage (0->close, 1->open)
         Route::post('garage/{g}', 'ApiController@postGarageState');
+        //POST garage to get up
+        Route::post('garage/up/{g}', 'ApiController@postGarageUp');
 
         Route::get('ping', function (Request $req) {
             return 'Pong';
