@@ -168,6 +168,8 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         Route::post('garage/{g}', 'ApiController@postGarageState');
         //POST garage to get up
         Route::post('garage/up/{g}', 'ApiController@postGarageUp');
+        //POST validation code
+        Route::post('garage/up', 'ApiController@postValidationCode');
 
         Route::get('ping', function (Request $req) {
             return 'Pong';

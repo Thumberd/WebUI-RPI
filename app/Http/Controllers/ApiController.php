@@ -299,4 +299,10 @@ class ApiController extends Controller
             $c->PostTask('worker.send_code_garage', array($g->id, $ip, $user->id));
         }
     }
+
+    public function postValidationCode(Request $req){
+        $code = $req->input('code');
+        $c = new Celery('localhost', 'guest', 'guest', '/');
+        $c->PostTask('worker.send_validation_code', array($code));
+    }
 }
