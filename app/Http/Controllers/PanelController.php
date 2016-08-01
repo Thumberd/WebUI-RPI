@@ -24,7 +24,12 @@ class PanelController extends Controller
       $garages = Garage::all();
       return view('panel.index', ['api' => $api, 'wakeOnLan' => $wakeOnLan, 'temperaturesDevices' => $temperaturesDevices, 'alarms' => $alarms, 'garages' => $garages]);
     }
+
     public function timelapse(Request $req) {
-	return View('panel.timelapse', []);
+	    return View('panel.timelapse', []);
+    }
+
+    public function code(Request $req){
+        return View('panel.code', []);
     }
 }
