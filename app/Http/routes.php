@@ -162,15 +162,14 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
     //Garages
         //GET
         Route::get('garages', 'ApiController@getGarages');
+	//POST a garage to get up
+	Route::post('garage/up/{g}', 'ApiController@postGarageUp');
+        //POST validation code
+        Route::post('garage/up', 'ApiController@postValidationCode');
         //GET "g"->garage id
         Route::get('garage/{g}', 'ApiController@getGarage');
         //POST "g"-> garage id, "state"-> state of the garage (0->close, 1->open)
         Route::post('garage/{g}', 'ApiController@postGarageState');
-        //POST garage to get up
-        Route::post('garage/up/{g}', 'ApiController@postGarageUp');
-        //POST validation code
-        Route::post('garage/up', 'ApiController@postValidationCode');
-
         Route::get('ping', function (Request $req) {
             return 'Pong';
         });

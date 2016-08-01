@@ -304,7 +304,9 @@ class ApiController extends Controller
         $code = $req->input('code');
         $ip = $req->ip();
         $user = App\User::where('token_id', $req->header('Token-Id'))->first();
-        $c = new Celery('localhost', 'guest', 'guest', '/');
-        $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
+	if($user){
+	        $c = new Celery('localhost', 'guest', 'guest', '/');
+	        $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
+	}
     }
 }
