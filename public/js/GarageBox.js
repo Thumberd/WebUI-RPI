@@ -4,7 +4,7 @@ var GarageBox = React.createClass({
   displayName: "GarageBox",
 
   getInitialState: function getInitialState() {
-    return { state: "" };
+    return { state: "", button: ""};
   },
   loadState: function loadState() {
     $.get({
@@ -14,7 +14,14 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        this.setState({ state: JSON.parse(data)['state'] });
+        var stateG = JSON.parse(data)['state'];
+        this.setState({ state: stateG });
+        if (stateG == 1){
+          this.setState({ button: "Fermer"});
+        }
+        else {
+          this.setState({button: "Ouvrir"});
+        }
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -22,7 +29,6 @@ var GarageBox = React.createClass({
     });
   },
   handleClick: function handleClick() {
-    console.log("ok");
     $.post({
       url: "/api/v2/garage/up/" + this.props.id,
       headers: {
@@ -30,7 +36,6 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        console.log("oka");
         window.location.replace("code");
       }.bind(this),
       error: function (xhr, status, err) {

@@ -296,7 +296,12 @@ class ApiController extends Controller
         $client = Device::where('ip', $ip);
         if ($client){
             $c = new Celery('localhost', 'guest', 'guest', '/');
+            $c->PostTask('worker.garage_authorized', array($g->id, $ip, $user->id));
+        }
+        else {
+            $c = new Celery('localhost', 'guest', 'guest', '/');
             $c->PostTask('worker.send_code_garage', array($g->id, $ip, $user->id));
+            return "Validation code sent.";
         }
     }
 
@@ -304,9 +309,10 @@ class ApiController extends Controller
         $code = $req->input('code');
         $ip = $req->ip();
         $user = App\User::where('token_id', $req->header('Token-Id'))->first();
-	if($user){
-	        $c = new Celery('localhost', 'guest', 'guest', '/');
-	        $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
-	}
+        if($user){
+                $c = new Celery('localhost', 'guest', 'guest', '/');
+                $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
+        }
+        return "Request sent.";
     }
 }

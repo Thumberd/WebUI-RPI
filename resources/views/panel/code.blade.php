@@ -3,12 +3,12 @@
 @section('content')
 
     <div class="row">
-        <div class="col s12  white-text" id="Code">
+        <div class="col s12 white-text" id="Code">
             <div class="card grey">
                 <div class="card-content">
                     <span class="card-title">Validation du code</span>
                     <input type="tel" id="code"/>
-                    <a href="#" id="button">Valider</a>
+                    <a href="#" class="btn waves-effect waves-light btn btn yellow" id="button">Valider</a>
                 </div>
             </div>
         </div>
@@ -28,7 +28,10 @@
                             'code': $('#code').val()
                         },
                         success: function (data) {
-                            console.log(JSON.parse(data))
+                            Materialize.toast(data, 2000, 'green')
+                            setTimeout(function(){
+                                window.location.replace("panel");
+                            }, 2000);
                         }.bind(this),
                         error: function (xhr, status, err) {
                             console.error(this.props.url, status, err.toString());
