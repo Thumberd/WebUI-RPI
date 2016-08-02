@@ -29,7 +29,7 @@ Route::group(['middleware' => ['web']], function () {
     });
     Route::get('/panel', 'PanelController@index');
     Route::get('/timelapse', 'PanelController@timelapse');
-    Route::get('/route', 'PanelController@code');
+    Route::get('/code', 'PanelController@code');
 
     Route::get('/profile', 'ProfileController@index');
     Route::post('/profile/mail', 'ProfileController@storeMail');

@@ -77,22 +77,23 @@
       <div class="card grey">
         <div class="card-content white-text">
           <span class="card-title">Garage</span>
-          <table>
+<!--          <table>
            <thead>
              <tr>
                  <th data-field="id">Name</th>
                  <th data-field="value">State</th>
+		 <th data-field="button">Agir</th>
              </tr>
            </thead>
 
-           <tbody id="GarageBox">
+           <tbody id="GarageBox">-->
 		@foreach($garages as $garage)
-	          <tr id="garage{{ $garage->id }}">
+	          <div id="garage{{ $garage->id }}">
 	            
-                  </tr>
+                  </div>
         	 @endforeach
-           </tbody>
-         </table>
+           <!--</tbody>
+         </table>-->
         </div>
       </div>
     </div>

@@ -17,12 +17,12 @@
 
         @section('JS')
             <script>
-                $("#button").onclick(function(){
+                $("#button").click(function(){
                     $.post({
                         url: "/api/v2/garage/up/",
                         headers: {
-                            'Token-Id': this.props.tokenID,
-                            'Token-Key': this.props.tokenKey
+                            'Token-Id': "{{ Auth::user()->token_id }}",
+                            'Token-Key': "{{ Auth::user()->token_key }}"
                         },
                         data: {
                             'code': $('#code').val()

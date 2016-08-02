@@ -7,7 +7,6 @@ var GarageBox = React.createClass({
     return { state: "" };
   },
   loadState: function loadState() {
-    console.log(this.props.id);
     $.get({
       url: "/api/v2/garage/" + this.props.id,
       headers: {
@@ -15,7 +14,6 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-	console.log(JSON.parse(data))
         this.setState({ state: JSON.parse(data)['state'] });
       }.bind(this),
       error: function (xhr, status, err) {
@@ -24,6 +22,7 @@ var GarageBox = React.createClass({
     });
   },
   handleClick: function handleClick() {
+    console.log("ok");
     $.post({
       url: "/api/v2/garage/up/" + this.props.id,
       headers: {
@@ -31,7 +30,7 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        console.log(JSON.parse(data))
+        console.log("oka");
         window.location.replace("code");
       }.bind(this),
       error: function (xhr, status, err) {
@@ -44,10 +43,10 @@ var GarageBox = React.createClass({
     setInterval(this.loadState, 20000);
   },
   render: function render() {
-    return React.createElement("tr", null,
-        React.createElement("td", null, React.createElement("i", { className: "fa fa-leaf" }), " ", this.props.name),
-        React.createElement("td", null, " ", this.state.state),
-        React.createElement("td", null, React.createElement("a", { className: "waves-effect waves-light btn teal", onClick: this.handleClick}, "Ouvrir"))
+    return React.createElement("div", null,
+        React.createElement("p", null, React.createElement("i", { className: "fa fa-leaf" }), " ", this.props.name),
+        React.createElement("p", null, " ", this.state.state),
+        React.createElement("p", null, React.createElement("a", { className: "waves-effect waves-light btn teal", onClick: this.handleClick}, "Ouvrir"))
     );
   }
 });
