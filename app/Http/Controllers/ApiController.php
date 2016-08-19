@@ -16,6 +16,7 @@ use App\Humidity;
 use App\PHumidity;
 use App\Scheduled;
 use Celery;
+use App\Data;
 
 class ApiController extends Controller
 {
@@ -40,7 +41,7 @@ class ApiController extends Controller
     public function getTemperature(Request $req, Device $device)
     {
         if ($device->type == '4') {
-            $temperature = Temperature::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+            $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
             return json_encode($temperature);
         }
         abort(406, 'Error: Device unable to save that type of data.');
@@ -52,7 +53,7 @@ class ApiController extends Controller
         $first = false;
         foreach ($devices as $device){
             if ($device->type == '4'){
-                $temperature = Temperature::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
                 if ($first != false){
                     echo ',';
                 }
@@ -71,7 +72,8 @@ class ApiController extends Controller
         if (!empty($req->header('Device-Id'))) {
             $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
             if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
-                $entry = new Temperature;
+                $entry = new Data;
+                $entry->data_type = 1;
                 $entry->device_id = $device->id;
                 $entry->value = $temperature;
                 $entry->save();
@@ -84,7 +86,7 @@ class ApiController extends Controller
     public function getHumidity(Request $req, Device $device)
     {
         if ($device->type == '4') {
-            $humidity = Humidity::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
             return json_encode($humidity);
         }
         abort(406, 'Error: Device unable to save that type of data.');
@@ -95,7 +97,7 @@ class ApiController extends Controller
         $devicesHumiditys = "";
         foreach ($devices as $device){
             if ($device->type == '4'){
-                $humidity = Humidity::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
                 $devicesHumiditys += json_encode($humidity);
             }
         }
@@ -108,7 +110,8 @@ class ApiController extends Controller
         if (!empty($req->header('Device-Id'))) {
             $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
             if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
-                $entry = new Humidity;
+                $entry = new Data;
+                $entry->data_type = 2;
                 $entry->device_id = $device->id;
                 $entry->value = $hum;
                 $entry->save();
@@ -121,7 +124,7 @@ class ApiController extends Controller
     public function getPlantHumidity(Request $req, Device $device)
     {
         if ($device->type == '4') {
-            $humidity = PHumidity::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
             return json_encode($humidity);
         }
         abort(406, 'Error: Device unable to save that type of data.');
@@ -132,7 +135,7 @@ class ApiController extends Controller
         $devicesHumiditys = "";
         foreach ($devices as $device){
             if ($device->type == '4'){
-                $humidity = PHumidity::where('device_id', $device->id)->orderBy('created_at', 'desc')->first();
+                $humidity = PHumidity::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
                 $devicesHumiditys += $humidity;
             }
         }
@@ -145,7 +148,8 @@ class ApiController extends Controller
         if (!empty($req->header('Device-Id'))) {
             $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
             if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
-                $entry = new PHumidity;
+                $entry = new Data;
+                $entry->data_type = 3;
                 $entry->device_id = $device->id;
                 $entry->value = $phum;
                 $entry->save();
