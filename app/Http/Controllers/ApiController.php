@@ -38,6 +38,27 @@ class ApiController extends Controller
         abort(406, 'Error: Device not found.');
     }
 
+    public function getAllDatas(Request $req){
+        $devices = Device::all();
+        $result = [];
+        foreach ($devices as $device){
+            if($devices->type == '4'){
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+                if($temperature != null){
+                    array_push($result, $temperature);
+                }
+                if($humidity != null){
+                    array_push($result, $humidity);
+                }
+                if($pHumidity != null){
+                    array_push($result, $pHumidity);
+                }
+            }
+        }
+    }
+
     public function getTemperature(Request $req, Device $device)
     {
         if ($device->type == '4') {

@@ -108,6 +108,9 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         //POST "id"-> device id to power on
         Route::post('wakeonlan', 'ApiController@wakeOnLan');
 
+    //All infos datas
+        //GET
+        Route::get('datas', 'ApiController@getAllDatas');
     //Temperature
         //GET "device"-> device id's requested temperature
         Route::get('temperature/{device}', 'ApiController@getTemperature');
