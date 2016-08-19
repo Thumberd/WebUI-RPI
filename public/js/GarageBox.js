@@ -16,7 +16,7 @@ var GarageBox = React.createClass({
       success: function (data) {
         var stateG = JSON.parse(data)['state'];
         this.setState({ state: stateG });
-        if (stateG == 1){
+        if (stateG == "1"){
           this.setState({ button: "Fermer"});
         }
         else {
@@ -36,7 +36,12 @@ var GarageBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        window.location.replace("code");
+        if (data.indexOf('up') >= 0){
+		Materialize.toast("Le garage devrait s'ouvrir", 4000, "green");
+	}
+	else {
+		window.location.replace("code");
+	}
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());

@@ -155,6 +155,10 @@ class ApiController extends Controller
         abort(406, 'Error: Device unable to save that type of data.');
     }
 
+    public function getAllAlarms(Request $req){
+        return json_encode(Alarm::all());
+    }
+
     public function getAlarmByDeviceId(Request $req, Device $device)
     {
         if($device->type != "2"){
@@ -206,7 +210,7 @@ class ApiController extends Controller
     }
     public function getDevice(Request $req, Device $device)
     {
-        return json_encode($device->makeHidden(['token_id', 'token_key'])->toArray());
+        return json_encode($device);
     }
 
     public function getDevices(Request $req){
@@ -294,9 +298,10 @@ class ApiController extends Controller
         $ip = $req->ip();
         $user = App\User::where('token_id', $req->header('Token-Id'))->first();
         $client = Device::where('ip', $ip);
-        if ($client){
+	if (strpos($ip, '192.168') !== false){
             $c = new Celery('localhost', 'guest', 'guest', '/');
             $c->PostTask('worker.garage_authorized', array($g->id, $ip, $user->id));
+            return "Garage up";
         }
         else {
             $c = new Celery('localhost', 'guest', 'guest', '/');

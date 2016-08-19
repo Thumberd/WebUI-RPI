@@ -33,7 +33,7 @@ var Event = React.createClass({
   },
   read: function read(){
     $.post({
-      url: "/api/v1/event/" + this.state.events[0]['id'] + "/read",
+      url: "/api/v2/event/" + this.state.events[0]['id'],
       data: {},
       headers: {
         "Token-Id": this.props.tokenID,
@@ -41,6 +41,7 @@ var Event = React.createClass({
       },
       success: function (data) {
         console.log(data);
+        this.getEvents();
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());

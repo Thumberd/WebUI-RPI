@@ -52,6 +52,13 @@ Route::group(['middleware' => ['web']], function () {
     });
 
 
+    Route::post('gettoken', function (Request $req) {
+        if (Auth::once(['email' => $req->input('email'), 'password' => $req->input('password')])) {
+            return json_encode(array('token_id' => Auth::user()->token_id, 'token_key' => Auth::user()->token_key));
+        }
+        return 'Nope';
+    });
+
     Route::get('/local', 'LocalController@index');
     Route::get('/localinfo', 'LocalController@info');
     //Route::auth();
@@ -110,6 +117,8 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         Route::post('temperature', 'ApiController@postTemperature');
 
     //Alarms
+        //GET all alarms
+        Route::get('alarms', 'ApiController@getAllAlarms');
         //GET "device"-> device id
         Route::get('alarm/{device}', 'ApiController@getAlarmByDeviceId');
         //POST "device"-> device id. Change the state of the alarm.
