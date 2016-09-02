@@ -30,6 +30,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/panel', 'PanelController@index');
     Route::get('/timelapse', 'PanelController@timelapse');
     Route::get('/code', 'PanelController@code');
+    Route::get('/chart', 'PanelController@chart');
 
     Route::get('/profile', 'ProfileController@index');
     Route::post('/profile/mail', 'ProfileController@storeMail');

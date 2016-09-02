@@ -42,7 +42,7 @@ class ApiController extends Controller
         $devices = Device::all();
         $result = [];
         foreach ($devices as $device){
-            if($devices->type == '4'){
+            if($device->type == '4'){
                 $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
                 $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
                 $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
@@ -57,6 +57,7 @@ class ApiController extends Controller
                 }
             }
         }
+    return $result;
     }
 
     public function getTemperature(Request $req, Device $device)
@@ -166,6 +167,7 @@ class ApiController extends Controller
     public function postPlantHumidity(Request $req)
     {
         $phum = $req->input('plant_humidity');
+        $phum = (($phum/1024) - 1) * 100 * (-1);
         if (!empty($req->header('Device-Id'))) {
             $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
             if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
