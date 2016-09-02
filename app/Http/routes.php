@@ -105,6 +105,9 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
 });
 
 Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
+
+    //Special response for app which give all real-time information
+        Route::get('all', 'ApiController@getApp');
     //Wake On Lan
         //POST "id"-> device id to power on
         Route::post('wakeonlan', 'ApiController@wakeOnLan');

@@ -26,6 +26,37 @@ class ApiController extends Controller
         $this->middleware('API');
     }
 
+    public function getApp(Request $request){
+        $alarms = Alarm::all();
+        $garages = Garage::all();
+        $events = Event::all();
+        $devices = Device::all();
+        $result = [];
+        foreach ($devices as $device){
+            if($device->type == '4'){
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+                if($temperature != null){
+                    array_push($result, $temperature);
+                }
+                if($humidity != null){
+                    array_push($result, $humidity);
+                }
+                if($pHumidity != null){
+                    array_push($result, $pHumidity);
+                }
+            }
+        }
+        $response = '{';
+        $response .= "'alarms': " . $alarms . ',';
+        $response .= "'garages': " . $garages . ',';
+        $response .= "'result': " . $result . ',';
+        $response .= "'events': " . $ $events . '}';
+        return $response;
+
+    }
+
     public function wakeOnLan(Request $req)
     {
         $device = Device::findOrFail($req->id);
