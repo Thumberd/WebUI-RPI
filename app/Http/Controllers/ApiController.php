@@ -361,6 +361,7 @@ class ApiController extends Controller
         $ip = $req->ip();
         $user = App\User::where('token_id', $req->header('Token-Id'))->first();
         $client = Device::where('ip', $ip);
+	echo $ip;
 	if (strpos($ip, '192.168') !== false){
             $c = new Celery('localhost', 'guest', 'guest', '/');
             $c->PostTask('worker.garage_authorized', array($g->id, $ip, $user->id));
