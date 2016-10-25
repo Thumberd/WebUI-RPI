@@ -106,16 +106,16 @@ class ApiController extends Controller
                 }
             }
         }
-    return $result;
+    return response(json_encode($result), 200)->header('Content-Type', 'application/json');
     }
 
     public function getTemperature(Request $req, Device $device)
     {
         if ($device->type == '4') {
             $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
-            return json_encode($temperature);
+            return response(json_encode($temperature), 200)->header('Content-Type', 'application/json');
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getAllTemperatures(Request $req){
@@ -148,10 +148,10 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $temperature;
                 $entry->save();
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getHumidity(Request $req, Device $device)
@@ -160,7 +160,7 @@ class ApiController extends Controller
             $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
             return json_encode($humidity);
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getAllHumiditys(Request $req){
@@ -186,10 +186,10 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $hum;
                 $entry->save();
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getPlantHumidity(Request $req, Device $device)
@@ -198,7 +198,7 @@ class ApiController extends Controller
             $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
             return json_encode($humidity);
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getAllPlantHumiditys(Request $req){
@@ -225,10 +225,10 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $phum;
                 $entry->save();
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
-        abort(406, 'Error: Device unable to save that type of data.');
+        return response(json_encode(['status' => 'error', 'message' => 'Device unable to save that kind of data.'], 406))->header('Content-Type', 'application/json');
     }
 
     public function getAllAlarms(Request $req){
@@ -238,7 +238,7 @@ class ApiController extends Controller
     public function getAlarmByDeviceId(Request $req, Device $device)
     {
         if($device->type != "2"){
-            abort(406, "Error: Device is not an alarm.");
+            return response(json_encode(['status' => 'error', 'message' => 'The device specified is not an alarm.'], 406))->header('Content-Type', 'application/json');
         }
         return json_encode($device->alarm);
     }
@@ -246,17 +246,17 @@ class ApiController extends Controller
     public function postChangeAlarmState(Request $req, Device $device)
     {
         if($device->type != "2"){
-            abort(406, "Error: Device is not an alarm.");
+            return response(json_encode(['status' => 'error', 'message' => 'The device specified is not an alarm.'], 406))->header('Content-Type', 'application/json');
         }
         $state = $device->alarm->state;
         if ($state == '1') {
             $device->alarm->state = false;
             $device->push();
-            return 'Request success';
+            return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
         } else if ($state == '0') {
             $device->alarm->state = true;
             $device->push();
-            return 'Request success';
+            return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
         }
         abort(500, "Error");
     }
@@ -264,6 +264,7 @@ class ApiController extends Controller
     public function getSendAlarm(Request $req, Device $device){
         $c = new Celery('localhost', 'guest', 'guest', '/');
         $c->PostTask('worker.alarm_protocol', array($device->id));
+        return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
     }
 
     public function getScheduledAlarms(Request $req){
@@ -278,12 +279,14 @@ class ApiController extends Controller
         $scheduled->endHour = $req->input('endHour');
         $scheduled->endMinute = $req->input('endMinute');
         $scheduled->save();
+        return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
     }
 
     public function deleteScheduled(Request $req, Scheduled $id){
         $id->delete();
-        return 'Request success';
+        return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
     }
+
     public function getDevice(Request $req, Device $device)
     {
         return json_encode($device);
@@ -326,7 +329,7 @@ class ApiController extends Controller
             if ($user AND $user->token_key == $req->header('Token-Key')) {
                 $event->read = true;
                 $event->save();
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
         abort(401, "Only users can access Events.");
@@ -342,7 +345,7 @@ class ApiController extends Controller
                     $event->read = true;
                     $event->save();
                 }
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
         abort(401, "Only users can access Events.");
@@ -373,17 +376,15 @@ class ApiController extends Controller
     public function postGarageUp(Request $req, Garage $g){
         $ip = $req->ip();
         $user = App\User::where('token_id', $req->header('Token-Id'))->first();
-        $client = Device::where('ip', $ip);
-	echo $ip;
-	if (strpos($ip, '192.168') !== false){
+        if (strpos($ip, '192.168') !== false){
             $c = new Celery('localhost', 'guest', 'guest', '/');
             $c->PostTask('worker.garage_authorized', array($g->id, $ip, $user->id));
-            return "Garage up";
+            return response(json_encode(['status' => 'success', 'message' => 'Garage is opening']), 200)->header('Content-Type', 'application/json');
         }
         else {
             $c = new Celery('localhost', 'guest', 'guest', '/');
             $c->PostTask('worker.send_code_garage', array($g->id, $ip, $user->id));
-            return "Validation code sent.";
+            return response(json_encode(['status' => 'success', 'message' => 'A validation code has been send']), 200)->header('Content-Type', 'application/json');
         }
     }
 
@@ -394,7 +395,8 @@ class ApiController extends Controller
         if($user){
                 $c = new Celery('localhost', 'guest', 'guest', '/');
                 $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
         }
-        return "Request sent.";
+        return response(json_encode(['status' => 'error']), 200)->header('Content-Type', 'application/json');
     }
 }

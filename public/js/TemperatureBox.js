@@ -27,6 +27,8 @@ var TemperatureBox = React.createClass({
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());
+        this.setState({bg: "red"});
+        this.setState({temp: "Error"});
       }.bind(this)
     });
   },

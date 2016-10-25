@@ -16,7 +16,7 @@ var GarageBox = React.createClass({
       success: function (data) {
         var stateG = JSON.parse(data)['state'];
         this.setState({ state: stateG });
-        if (stateG == "1"){
+        if (stateG == 1){
           this.setState({ button: "Fermer"});
         }
         else {
@@ -25,6 +25,7 @@ var GarageBox = React.createClass({
       }.bind(this),
       error: function (xhr, status, err) {
         console.error(this.props.url, status, err.toString());
+        this.setState({ button: "Erreur API"});
       }.bind(this)
     });
   },
