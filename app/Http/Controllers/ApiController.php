@@ -81,10 +81,10 @@ class ApiController extends Controller
         if ($device->type == "3") {
             if (preg_match('/([a-fA-F0-9]{2}[:|\-]?){6}/', $device->code)) {
                 exec('awake ' . $device->code);
-                return "Request success";
+                return response(json_encode(['status' => 'success']), 200)->header('Content-Type', 'application/json');
             }
         }
-        abort(406, 'Error: Device not found.');
+        return response(json_encode(['status' => 'error', 'message' => 'The specified device is unable to be powered on remotely.']), 406)->header('Content-Type', 'application/json');
     }
 
     public function getAllDatas(Request $req){
