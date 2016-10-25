@@ -28,7 +28,9 @@
   <nav>
     <div class="nav-wrapper grey darken-1">
       <a href="#" class="brand-logo center">Raspberry Pi</a>
-      <ul id="nav-mobile" class="left">
+      <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="fa fa-bars"></i></a>
+
+      <ul id="nav-mobile" class="left hide-on-med-and-down">
         <li><a href="{{ url('/') }}">Home</a></li>
         @if (Auth::guest())
           <li><a href="{{ url('/login') }}">Login</a></li>
@@ -36,6 +38,7 @@
         @else
           <li><a href="{{ url('/panel') }}">Panel</a></li>
           <li><a href="{{ url('/devices') }}">Devices</a></li>
+          <li><a href="{{ url('/chart') }}">Chart</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
           <!-- Dropdown Structure -->
           <ul id='dropdown1' class='dropdown-content'>
@@ -44,7 +47,24 @@
           </ul>
         @endif
       </ul>
-      <a href="#" data-activates="slide-out" class="button-collapse">L</a>
+
+      <ul class="side-nav" id="mobile-demo">
+        <li><a href="{{ url('/') }}">Home</a></li>
+        @if (Auth::guest())
+          <li><a href="{{ url('/login') }}">Login</a></li>
+          <li><a href="{{ url('/register') }}">Register</a></li>
+        @else
+          <li><a href="{{ url('/panel') }}">Panel</a></li>
+          <li><a href="{{ url('/devices') }}">Devices</a></li>
+          <li><a href="{{ url('/chart') }}">Chart</a></li>
+          <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
+          <!-- Dropdown Structure -->
+          <ul id='dropdown1' class='dropdown-content'>
+            <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-user"></i>Mes infos</a></li>
+            <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+          </ul>
+        @endif
+      </ul>
     </div>
   </nav>
 

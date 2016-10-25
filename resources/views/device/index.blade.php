@@ -47,7 +47,6 @@
                 </div>
             </div>
             </form>
-        </div>
         <div class="modal-footer">
             <button href="#!" type="submit" class="modal-action modal-close waves-effect waves-green btn-flat ">Ajouter</button>
         </div>
@@ -57,7 +56,7 @@
   <div class="col s12">
     <div class="card grey">
       <div class="card-content white-text">
-        <span class="card-title">Devices  <a class="modal-trigger waves-effect waves-light btn" href="#modal1">Ajouter</a></span>
+        <span class="card-title">Devices  <a class="modal-opener modal-trigger waves-effect waves-light btn" href="#modal1">Ajouter</a></span>
         <table>
           <thead>
             <tr>
@@ -120,21 +119,9 @@
 
 @section('JS')
 <script>
-function generateToken(id){
-	$.post({
-		url: "/api/v1/device/gen_token/" + id,
-		headers: {
-			"Token-Id": "{{ Auth::user()->token_id }}",
-			"Token-Key": "{{ Auth::user()->token_key }}"
-		},
-		success: function(data) {
-			Materialize.Toast("Rafraichîr la page pour voir les changements.", 4000, "teal")
-		}.bind(this),
-		error: function(xhr, status, err){
-			console.error(status, err.toString());
-		}.bind(this)
-	});
-	
-}
+$('.modal-opener').click(function(){
+	 $('#modal1').openModal();
+});
+
 </script>
 @endsection

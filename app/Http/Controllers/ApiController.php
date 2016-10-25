@@ -29,7 +29,12 @@ class ApiController extends Controller
     public function getApp(Request $request){
         $alarms = Alarm::all();
         $garages = Garage::all();
-        $events = Event::all();
+        if (!empty($request->header('Token-Id'))) {
+            $user = App\User::where('token_id', $request->header('Token-Id'))->first();
+            if ($user AND $user->token_key == $request->header('Token-Key')) {
+                $events = App\Event::where('user_id', $user->id)->where('read', 0)->get();
+            }
+        }
         $devices = Device::all();
         $result = [];
         foreach ($devices as $device){
@@ -49,10 +54,10 @@ class ApiController extends Controller
             }
         }
         $response = '{';
-        $response .= "'alarms': " . $alarms . ',';
-        $response .= "'garages': " . $garages . ',';
-        $response .= "'result': " . $result . ',';
-        $response .= "'events': " . $ $events . '}';
+        $response .= '"alarms": ' . $alarms . ',';
+        $response .= '"garages": ' . $garages . ',';
+        $response .= '"result": ' . json_encode($result) . ',';
+        $response .= '"events": ' . $events . '}';
         return $response;
 
     }
