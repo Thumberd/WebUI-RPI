@@ -57,7 +57,7 @@ var GarageBox = React.createClass({
     return React.createElement("div", null,
         React.createElement("p", null, React.createElement("i", { className: "fa fa-leaf" }), " ", this.props.name),
         React.createElement("p", null, " ", this.state.state),
-        React.createElement("p", null, React.createElement("a", { className: "waves-effect waves-light btn teal", onClick: this.handleClick}, "Ouvrir"))
+        React.createElement("p", null, React.createElement("a", { className: "waves-effect waves-light btn teal", onClick: this.handleClick}, this.state.button))
     );
   }
 });

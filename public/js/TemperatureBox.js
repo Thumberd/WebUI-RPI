@@ -14,11 +14,11 @@ var TemperatureBox = React.createClass({
         'Token-Key': this.props.tokenKey
       },
       success: function (data) {
-        data = JSON.parse(data);
         this.setState({ temp: data['value'] });
-        var date = new Date(data['created_at']);
-        var aDate = Date();
-        if (aDate - data > 900000){
+        var date = new Date(data['created_at'].replace(/-/g,'/'));
+        var aDate = new Date();
+	console.log(Math.abs(aDate-date));
+        if (aDate - date > 1000 * 60 * 15){
           this.setState({bg: "red"});
         }
         else {
