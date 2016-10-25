@@ -29,12 +29,7 @@ class ApiController extends Controller
     public function getApp(Request $request){
         $alarms = Alarm::all();
         $garages = Garage::all();
-        if (!empty($request->header('Token-Id'))) {
-            $user = App\User::where('token_id', $request->header('Token-Id'))->first();
-            if ($user AND $user->token_key == $request->header('Token-Key')) {
-                $events = App\Event::where('user_id', $user->id)->where('read', 0)->get();
-            }
-        }
+        $events = Event::all();
         $devices = Device::all();
         $result = [];
         foreach ($devices as $device){
@@ -54,10 +49,28 @@ class ApiController extends Controller
             }
         }
         $response = '{';
-        $response .= '"alarms": ' . $alarms . ',';
-        $response .= '"garages": ' . $garages . ',';
-        $response .= '"result": ' . json_encode($result) . ',';
-        $response .= '"events": ' . $events . '}';
+        $response .= "'alarms': " . $alarms . ',';
+        $response .= "'garages': " . $garages . ',';
+        $response .= "'result': " . $result . ',';
+        $response .= "'events': " . $ $events . '}';$devices = Device::all();
+        $result = [];
+        foreach ($devices as $device){
+            if($device->type == '4'){
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+                if($temperature != null){
+                    array_push($result, $temperature);
+                }
+                if($humidity != null){
+                    array_push($result, $humidity);
+                }
+                if($pHumidity != null){
+                    array_push($result, $pHumidity);
+                }
+            }
+        }
+        return $result;
         return $response;
 
     }
