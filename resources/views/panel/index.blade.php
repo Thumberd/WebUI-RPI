@@ -4,10 +4,10 @@
 <div class="row">
   <div class="col s12 m6 l12" id="Event">
   </div>
-   <div class="col s12 m4 white-text" id="**AlarmBox">
-     <div class="card grey">
+   <div class="col s12 m4 white-text">
+     <div class="card {{ $color }} lighten-1">
 	<div class="card-content">
-	<span class="card-title">Alarme</span>
+	<span class="card-title">Alarmes</span>
        <table>
        <tbody id="Alarms">
          @foreach($alarms as $alarm)
@@ -23,13 +23,13 @@
    </div>
 
    <div class="col s12 m4">
-     <div class="card grey">
+     <div class="card {{ $color }} lighten-1">
        <div class="card-content white-text">
-         <span class="card-title">Wake On Lan</span>
+         <span class="card-title">Centre de contrôle</span>
          <table>
           <thead>
             <tr>
-                <th data-field="id">Name</th>
+                <th data-field="id">Nom</th>
                 <th data-field="pushon"></th>
             </tr>
           </thead>
@@ -48,14 +48,14 @@
     </div>
 
     <div class="col s12 m4">
-      <div class="card grey">
+      <div class="card {{ $color }} lighten-1">
         <div class="card-content white-text">
-          <span class="card-title">Temperature</span>
+          <span class="card-title">Température</span>
           <table>
            <thead>
              <tr>
-                 <th data-field="id">Name</th>
-                 <th data-field="value">Value</th>
+                 <th data-field="id">Nom</th>
+                 <th data-field="value">°C</th>
              </tr>
            </thead>
 
@@ -73,50 +73,46 @@
     </div>
 
     <div class="col s12 m4">
-      <div class="card grey">
+      <div class="card {{ $color }} lighten-1">
         <div class="card-content white-text">
-          <span class="card-title">Garage</span>
-<!--          <table>
-           <thead>
-             <tr>
-                 <th data-field="id">Name</th>
-                 <th data-field="value">State</th>
-		 <th data-field="button">Agir</th>
-             </tr>
-           </thead>
-
-           <tbody id="GarageBox">-->
+          <span class="card-title">Garages</span>
 		@foreach($garages as $garage)
 	          <div id="garage{{ $garage->id }}">
 	            
-                  </div>
+              </div>
         	 @endforeach
-           <!--</tbody>
-         </table>-->
         </div>
       </div>
     </div>
 @endsection
 
 @section('JS')
-<script src="/js/AlarmBox.js"></script>
-<script src="/js/wakeOnLan.js"></script>
-<script src="/js/TemperatureBox.js"></script>
-<script src="/js/Event.js"></script>
-<script src="/js/GarageBox.js"></script>
+<script src="{{ asset('js/AlarmBox.js') }}"></script>
+<script src="{{ asset('js/wakeOnLan.js') }}"></script>
+<script src="{{ asset('js/TemperatureBox.js') }}"></script>
+<script src="{{ asset('js/Event.js') }}"></script>
+<script src="{{ asset('js/GarageBox.js') }}"></script>
 <script>
- ReactDOM.render(React.createElement(Event, {tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key}}"}), document.getElementById('Event'));
+    var token_id = "{{ Auth::user()->token_id }}";
+    var token_key = "{{ Auth::user()->token_key}}";
+
+ ReactDOM.render(React.createElement(Event, {tokenID: token_id, tokenKey: token_key}), document.getElementById('Event'));
   @foreach ($wakeOnLan as $wol)
-    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('wol{{ $wol->id }}'));
+    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: token_id,
+      tokenKey: token_key}), document.getElementById('wol{{ $wol->id }}'));
   @endforeach
   @foreach ($temperaturesDevices as $temperaturesDevice)
-    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('temp{{ $temperaturesDevice->id }}'));
+    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}",
+      tokenID: token_id, tokenKey: token_key}), document.getElementById('temp{{ $temperaturesDevice->id }}'));
   @endforeach
   @foreach ($alarms as $alarm)
-    ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
+    ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}",
+      name: "{{ $alarm->device->name }}", tokenID: token_id, tokenKey: token_key}),
+          document.getElementById('alarm{{ $alarm->id }}'));
   @endforeach
   @foreach ($garages as $garage)
-    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}", tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('garage{{ $garage->id }}'));
+    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}",
+      tokenID: token_id, tokenKey: token_key}), document.getElementById('garage{{ $garage->id }}'));
   @endforeach
 </script>
 @endsection

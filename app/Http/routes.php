@@ -24,9 +24,7 @@ use Illuminate\Http\Request;
 */
 Route::group(['middleware' => ['web']], function () {
     //
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    Route::get('/', 'PanelController@index');
     Route::get('/panel', 'PanelController@index');
     Route::get('/timelapse', 'PanelController@timelapse');
     Route::get('/code', 'PanelController@code');
@@ -57,21 +55,14 @@ Route::group(['middleware' => ['web']], function () {
         if (Auth::once(['email' => $req->input('email'), 'password' => $req->input('password')])) {
             return json_encode(array('token_id' => Auth::user()->token_id, 'token_key' => Auth::user()->token_key));
         }
-        return 'Nope';
     });
 
-    Route::get('/local', 'LocalController@index');
-    Route::get('/localinfo', 'LocalController@info');
     //Route::auth();
     Route::get('/login', array('as' => 'login', 'uses' => 'Auth\AuthController@getLogin'));
     Route::post('/login', array('as' => 'login', 'uses' => 'Auth\AuthController@postLogin'));
     Route::get('/logout', array('as' => 'logout', 'uses' => 'Auth\AuthController@getLogout'));
 });
 
-// Route::group(['middleware' => ['localhost']], function () {
-//   Route::get('/local', 'LocalController@index');
-//   Route::get('/localinfo', 'LocalController@info');
-// });
 Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
 
     Route::post('wakeonlan', 'ApiController@wakeOnLan');
