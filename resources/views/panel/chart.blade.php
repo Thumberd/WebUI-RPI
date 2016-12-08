@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<script type="text/javascript" src="http://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<script type="text/javascript" src="/js/canvasjs.min.js"></script>
 <div class="row">
    <div class="col s12 white-text">
      <div class="card grey">

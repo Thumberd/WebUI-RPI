@@ -64,12 +64,12 @@
     @yield('content')
 
     <!-- Compiled and minified JavaScript -->
-    <script src="{{ asset('js/react.min.css') }}"></script>
-    <script src="{{ asset('js/react-dom.min.css') }}"></script>
-    <script src="{{ asset('js/browser.min.css') }}"></script>
-    <script src="{{ asset('js/jquery.min.css') }}"></script>
-    <script src="{{ asset('js/marked.min.css') }}"></script>
-    <script src="{{ asset('js/materialize.min.css') }}"></script>
+    <script src="{{ asset('js/react.min.js') }}"></script>
+    <script src="{{ asset('js/react-dom.min.js') }}"></script>
+    <script src="{{ asset('js/browser.min.js') }}"></script>
+    <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/marked.min.js') }}"></script>
+    <script src="{{ asset('js/materialize.min.js') }}"></script>
 
     <script>
       $( document ).ready(function(){
