@@ -15,17 +15,49 @@ use App\Data;
 class PanelController extends Controller
 {
     //
+
     public function __construct(){
-      $this->middleware('auth');
+        $this->middleware('auth');
+        $this->begin_Xmas = Carbon::create(2016, 12, 10, 0, 0, 0);
+        $this->second = Carbon::create(2016, 9, 5, 20, 26, 1);
     }
+
+    private function isEvent(){
+        $actualYear = Carbon::now()->year;
+        while (true) {
+            //Xmas Check
+            $begin = Carbon::create($actualYear, 12, 10, 0, 0, 0);
+            $end = Carbon::create($actualYear, 12, 27, 0, 0, 0);
+            if(Carbon::now()->between($begin, $end)) return "Xmas";
+
+            //NYear Check
+            $begin = Carbon::create($actualYear, 12, 27, 0, 0, 0);
+            $end = Carbon::create($actualYear + 1, 01, 2, 0, 0, 0);
+            if(Carbon::now()->between($begin, $end)) return "NYear";
+
+            return false;
+        }
+    }
+
     public function index(Request $request){
-      $pHum = Data::whereBetween('created_at', array(Carbon::now()->subDay(), Carbon::now()))->where('data_type', 3)->get();
-      $api = Apifree::all();
-      $alarms = Alarm::all();
-      $wakeOnLan = Device::where('type', 3)->get();
-      $temperaturesDevices = Device::where('type', 4)->get();
-      $garages = Garage::all();
-      return view('panel.index', ['api' => $api, 'wakeOnLan' => $wakeOnLan, 'temperaturesDevices' => $temperaturesDevices, 'alarms' => $alarms, 'garages' => $garages, 'pHum' => $pHum]);
+        $pHum = Data::whereBetween('created_at', array(Carbon::now()->subDay(), Carbon::now()))->where('data_type', 3)->get();
+        $api = Apifree::all();
+        $alarms = Alarm::all();
+        $wakeOnLan = Device::where('type', 3)->get();
+        $temperaturesDevices = Device::where('type', 4)->get();
+        $garages = Garage::all();
+        $color = "grey";
+        switch($this->isEvent()){
+            case "Xmas":
+                $color = "red";
+                break;
+            case "NYear":
+                $color = "purple";
+                break;
+        }
+        return view('panel.index', ['api' => $api, 'wakeOnLan' => $wakeOnLan,
+            'temperaturesDevices' => $temperaturesDevices, 'alarms' => $alarms,
+            'garages' => $garages, 'pHum' => $pHum, 'color' => $color]);
     }
 
     public function timelapse(Request $req) {

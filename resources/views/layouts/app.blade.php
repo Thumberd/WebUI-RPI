@@ -8,60 +8,52 @@
     <title>Interface d'administration</title>
 
     <!-- Fonts -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.4.0/css/font-awesome.min.css" rel='stylesheet' type='text/css'>
-    <link href="https://fonts.googleapis.com/css?family=Lato:100,300,400,700" rel='stylesheet' type='text/css'>
+    <link href="{{ asset('css/font-awesome.min.css') }}" rel='stylesheet' type='text/css'>
+  <link href="{{ asset('css/Lato.css') }}" rel='stylesheet' type='text/css'>
 
-    <!-- Compiled and minified CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="{{ asset('css/materialize.min.css') }}">
 
     <style>
-        body {
-            font-family: 'Lato';
-        }
-
-        .fa-btn {
-            margin-right: 6px;
-        }
+        /*.fa-btn {*/
+            /*margin-right: 6px;*/
+        /*}*/
     </style>
 </head>
 <body id="app-layout">
   <nav>
-    <div class="nav-wrapper grey darken-1">
-      <a href="#" class="brand-logo center">Raspberry Pi</a>
+    <div class="nav-wrapper {{ $color }} darken-1">
+      <a href="#" class="brand-logo center"><img src="{{ asset('images/logo.png') }}"></a>
       <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="fa fa-bars"></i></a>
 
       <ul id="nav-mobile" class="left hide-on-med-and-down">
-        <li><a href="{{ url('/') }}">Home</a></li>
         @if (Auth::guest())
-          <li><a href="{{ url('/login') }}">Login</a></li>
-          <li><a href="{{ url('/register') }}">Register</a></li>
+          <li><a href="{{ url('/login') }}">Connexion</a></li>
         @else
           <li><a href="{{ url('/panel') }}">Panel</a></li>
-          <li><a href="{{ url('/devices') }}">Devices</a></li>
-          <li><a href="{{ url('/chart') }}">Chart</a></li>
+          <li><a href="{{ url('/devices') }}">Périphériques</a></li>
+          <li><a href="{{ url('/chart') }}">Courbes</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
           <!-- Dropdown Structure -->
           <ul id='dropdown1' class='dropdown-content'>
             <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-user"></i>Mes infos</a></li>
-            <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+            <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Déconnexion</a></li>
           </ul>
         @endif
       </ul>
 
       <ul class="side-nav" id="mobile-demo">
-        <li><a href="{{ url('/') }}">Home</a></li>
         @if (Auth::guest())
-          <li><a href="{{ url('/login') }}">Login</a></li>
-          <li><a href="{{ url('/register') }}">Register</a></li>
+          <li><a href="{{ url('/login') }}">Connexion</a></li>
         @else
           <li><a href="{{ url('/panel') }}">Panel</a></li>
-          <li><a href="{{ url('/devices') }}">Devices</a></li>
-          <li><a href="{{ url('/chart') }}">Chart</a></li>
+          <li><a href="{{ url('/devices') }}">Périphériques</a></li>
+          <li><a href="{{ url('/chart') }}">Courbes</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
           <!-- Dropdown Structure -->
           <ul id='dropdown1' class='dropdown-content'>
             <li><a href="{{ url('/profile') }}"><i class="fa fa-btn fa-user"></i>Mes infos</a></li>
-            <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a></li>
+            <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Déconnexion</a></li>
           </ul>
         @endif
       </ul>
@@ -72,12 +64,12 @@
     @yield('content')
 
     <!-- Compiled and minified JavaScript -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+    <script src="{{ asset('js/react.min.css') }}"></script>
+    <script src="{{ asset('js/react-dom.min.css') }}"></script>
+    <script src="{{ asset('js/browser.min.css') }}"></script>
+    <script src="{{ asset('js/jquery.min.css') }}"></script>
+    <script src="{{ asset('js/marked.min.css') }}"></script>
+    <script src="{{ asset('js/materialize.min.css') }}"></script>
 
     <script>
       $( document ).ready(function(){
