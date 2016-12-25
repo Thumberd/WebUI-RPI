@@ -446,11 +446,10 @@ class ApiController extends Controller
     }
 
     public function V3getAllDatas(Request $req){
-        $devices = Device::all();
+        $devices = Device::where('type', '4')->get();
         $result = [];
         $dates = [];
         foreach ($devices as $device){
-            if($device->type == '4'){
                 $temperature = Data::where('device_id', $device->id)->where('data_type', 1)
                     ->orderBy('created_at', 'desc')
                     ->first();
@@ -473,9 +472,16 @@ class ApiController extends Controller
                     array_push($dates, $pHumidity['created_at']);
                 }
                 $max = max(array_map('strtotime', $dates));
-                return $this->returnFinal($result, '300', $max);
-            }
+        $response = response($result, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'max-age=300')
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $max) . " GMT");
         }
+$response = response($result, 200)
+            ->header('Content-Type', 'application/json')
+            ->header('Cache-Control', 'max-age=300')
+            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $max) . " GMT");
+	return $response;
 
     }
 
