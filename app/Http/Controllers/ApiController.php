@@ -4,15 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Auth;
-use App\Http\Requests;
 use App\Device;
-use App\Temperature;
 use App\Alarm;
 use App;
 use App\Event;
 use App\Apifree;
 use App\Garage;
-use App\Humidity;
 use App\PHumidity;
 use App\Scheduled;
 use Celery;
@@ -25,6 +22,9 @@ class ApiController extends Controller
     {
         $this->middleware('API');
     }
+
+    // Here is V2 of API
+    // Now deprecated
 
     public function getApp(Request $request){
         $alarms = Alarm::all();
@@ -382,4 +382,414 @@ class ApiController extends Controller
         }
         return response(json_encode(['status' => 'error']), 200)->header('Content-Type', 'application/json');
     }
+
+    // V3 API Service
+
+    private function returnData($data){
+        return json_encode(['status' => 'success', 'data' => $data]);
+    }
+
+    private function returnMessage($status, $userInfo, $details, $code){
+        return response(json_encode(['status' => $status, 'user_info' => $userInfo, 'details' => $details]), $code)
+            ->header('Content-Type', 'application/json');
+    }
+
+    private function returnFinal($data, $maxage, $lastmodified){
+        $response = response($this->returnData($data), 200)
+            ->header('Content-Type', 'application/json');
+        if($maxage != 0) $response->header('Cache-Control', 'max-age=' . $maxage);
+        if($lastmodified != 0) $response->header('Last-Modified', gmdate('D, d M Y H:i:s', $lastmodified) . " GMT");
+    }
+
+    public function V3getApp(Request $request){
+        $alarms = Alarm::all();
+        $garages = Garage::all();
+        $events = Event::all();
+        $devices = Device::all();
+        $result = [];
+        foreach ($devices as $device){
+            if($device->type == '4'){
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+                if($temperature != null){
+                    array_push($result, $temperature);
+                }
+                if($humidity != null){
+                    array_push($result, $humidity);
+                }
+                if($pHumidity != null){
+                    array_push($result, $pHumidity);
+                }
+            }
+        }
+        $response = '{';
+        $response .= "'alarms': " . $alarms . ',';
+        $response .= "'garages': " . $garages . ',';
+        $response .= "'result': " . json_encode($result);
+        //$response .= "'events': " . $events . '}';
+        $response .= '}';
+        return $response;
+
+    }
+
+    public function V3wakeOnLan(Request $req)
+    {
+        $device = Device::findOrFail($req->id);
+        if ($device->type == "3") {
+            if (preg_match('/([a-fA-F0-9]{2}[:|\-]?){6}/', $device->code)) {
+                exec('awake ' . $device->code);
+                return $this->returnMessage('succcess', 'Le périphérique va s\'allumer', '', 200);
+            }
+        }
+        return $this->returnMessage('fail', 'Le périhphérique ne peut être allumé à distance', 'The device cannot be powered remotely', 422);
+    }
+
+    public function V3getAllDatas(Request $req){
+        $devices = Device::all();
+        $result = [];
+        $dates = [];
+        foreach ($devices as $device){
+            if($device->type == '4'){
+                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+                if($temperature != null){
+                    array_push($result, $temperature);
+                    array_push($dates, $temperature['created_at']);
+                }
+                if($humidity != null){
+                    array_push($result, $humidity);
+                    array_push($dates, $humidity['created_at']);
+                }
+                if($pHumidity != null){
+                    array_push($result, $pHumidity);
+                    array_push($dates, $pHumidity['created_at']);
+                }
+                $max = max(array_map('strtotime', $dates));
+                return $this->returnFinal($result, '300', $max);
+            }
+        }
+
+    }
+
+    public function V3getTemperature(Request $req, Device $device)
+    {
+        if ($device->type == '4') {
+            $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
+                ->first();
+            return $this->returnFinal($temperature, '300', $temperature['created_at']);
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des températures',
+            'Device uncapable of saving temperature values', 422);
+    }
+
+    public function V3getAllTemperatures(Request $req){
+        $devices = Device::where('type', '4')->get();
+        $temperatures = [];
+        $dates = [];
+        foreach ($devices as $device){
+            $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
+                ->first();
+            array_push($temperatures, $temperature);
+            array_push($dates, $temperature['created_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($temperatures, '300', $max);
+    }
+
+    public function V3postTemperature(Request $req)
+    {
+        $temperature = $req->input('temperature');
+        if (!empty($req->header('Device-Id'))) {
+            $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
+            if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
+                $entry = new Data;
+                $entry->data_type = 1;
+                $entry->device_id = $device->id;
+                $entry->value = $temperature;
+                $entry->save();
+                $this->returnMessage('success', 'Température enregistrée', 'Saved !', 200);
+            }
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des températures',
+            'Device uncapable of saving tempeatures values', 422);
+    }
+
+    public function V3getHumidity(Request $req, Device $device)
+    {
+        if ($device->type == '4') {
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+            return $this->returnFinal($humidity, '300', $humidity['created_at']);
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités',
+            'Device uncapable of saving humidity values', 422);
+    }
+
+    public function V3getAllHumiditys(Request $req){
+        $devices = Device::where('type', 4)->get();
+        $devicesHumiditys = [];
+        $dates = [];
+        foreach ($devices as $device){
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')
+                ->first();
+            array_push($devicesHumiditys, $humidity);
+            array_push($dates, $humidity['created_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($devicesHumiditys, '300', $max);
+    }
+
+    public function V3postHumidity(Request $req)
+    {
+        $hum = $req->input('humidity');
+        if (!empty($req->header('Device-Id'))) {
+            $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
+            if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
+                $entry = new Data;
+                $entry->data_type = 2;
+                $entry->device_id = $device->id;
+                $entry->value = $hum;
+                $entry->save();
+               $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
+            }
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
+    }
+
+    public function V3getPlantHumidity(Request $req, Device $device)
+    {
+        if ($device->type == '4') {
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+            return $this->returnFinal($humidity, '300', $humidity['created_at']);
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
+
+    }
+
+    public function V3getAllPlantHumiditys(Request $req){
+        $devices = Device::where('type', 4)->get();
+        $plantHumiditys = [];
+        $dates = [];
+        foreach ($devices as $device){
+            $humidity = PHumidity::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+            array_push($plantHumiditys, $humidity);
+            array_push($dates, $humidity['created_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($plantHumiditys, '300', $max);
+    }
+
+    public function V3postPlantHumidity(Request $req)
+    {
+        $phum = $req->input('plant_humidity');
+        $phum = (($phum/1024) - 1) * 100 * (-1);
+        if (!empty($req->header('Device-Id'))) {
+            $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
+            if ($device AND $device->token_key == $req->header('Device-Key') AND $device->type == '4') {
+                $entry = new Data;
+                $entry->data_type = 3;
+                $entry->device_id = $device->id;
+                $entry->value = $phum;
+                $entry->save();
+                $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
+            }
+        }
+        return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
+    }
+
+    public function V3getAllAlarms(Request $req){
+        return $this->returnFinal(Alarm::all(), 60, 0);
+    }
+
+    public function V3getAlarmByDeviceId(Request $req, Device $device)
+    {
+        if($device->type != "2") return $this->returnMessage('fail', 'Le périhpérique spécifié n\'est pas une alarme',
+            'Specified device isn\'t an alarm', 422);
+
+        return $this->returnFinal($device->alarm(), 60, 0);
+    }
+
+    public function V3postChangeAlarmState(Request $req, Device $device)
+    {
+        if($device->type != "2") return $this->returnMessage('fail', 'Le périhpérique spécifié n\'est pas une alarme',
+            'Specified device isn\'t an alarm', 422);
+        $state = boolval($device->alarm()->state);
+
+        $device->alarm()->state = !$state;
+        $device->push();
+
+        return $this->returnFinal($device->alarm(), 0, 0);
+    }
+
+    public function V3postSendAlarm(Request $req, Device $device){
+        $c = new Celery('localhost', 'guest', 'guest', '/');
+        $c->PostTask('worker.alarm_protocol', array($device->id));
+        return $this->returnMessage('success', 'L\'alarme s\'est déclenchée', 'Alarm protocol was initiated', 200);
+    }
+
+    public function V3getScheduledAlarms(Request $req){
+        return $this->returnFinal(Scheduled::all(), 21600, 0);
+    }
+
+    public function V3postAddScheduled(Request $req, Device $device){
+        $scheduled = new Scheduled;
+        $scheduled->alarm_id = $device->alarmId;
+        $scheduled->beginHour = $req->input('beginHour');
+        $scheduled->beginminute = $req->input('beginMinute');
+        $scheduled->endHour = $req->input('endHour');
+        $scheduled->endMinute = $req->input('endMinute');
+        $scheduled->save();
+        return $this->returnMessage('success', 'La programmation de l\'alarme a bien été enregistrée', 'Entry added in DB', 200);
+    }
+
+    public function V3deleteScheduled(Request $req, Scheduled $id){
+        $id->delete();
+        return $this->returnMessage('success', 'La programmation de l\'alarme a été supprimée.', 'Entry deleted', 200);
+    }
+
+    public function V3getDevice(Request $req, Device $device)
+    {
+        return $this->returnFinal($device->toArray(), 1200000, $device['modified_at']);
+    }
+
+    public function V3getDevices(Request $req){
+        $dates = [];
+        $devices = Device::all();
+        foreach ($devices as $device){
+            array_push($dates, $device['modified_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($devices->toArray(), 86000, $max);;
+    }
+
+    public function V3postDeviceGenerateToken(Request $req)
+    {
+        if (!empty($req->header('Device-Id'))) {
+            $device = App\Device::where('token_id', $req->header('Device-Id'))->first();
+            if ($device AND $device->token_key == $req->header('Device-Key')){
+                $device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
+                $device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
+                $device->save();
+                return $this->returnFinal($device->makeVisible(['token_id', 'token_key'])->toArray(), 86000, $device['modified_at']);
+            }
+            return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
+        }
+        return $this->returnMessage('fail', 'Vous n\'avez pas précisé de tokens de connexion', 'Credentials not provided', 422);
+    }
+
+    public function V3getEvents(Request $req)
+    {
+        if (!empty($req->header('Token-Id'))) {
+            $user = App\User::where('token_id', $req->header('Token-Id'))->first();
+            if ($user AND $user->token_key == $req->header('Token-Key')) {
+                $events = Event::where('user_id', $user->id)->where('read', 0)->get();
+                $lastEvent = Event::where('user_id', $user->id)->where('read', 0)->orderBy('created_at', 'desc')->first();
+                return $this->returnFinal($events, 500, $lastEvent['created_at']);
+            }
+            return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
+        }
+        return $this->returnMessage('fail', 'Vous n\'avez pas précisé de tokens de connexion', 'Credentials not provided', 422);
+    }
+
+    //Set an event as read
+    public function V3postEventRead(Request $req, Event $event)
+    {
+        if (!empty($req->header('Token-Id'))) {
+            $user = User::where('token_id', $req->header('Token-Id'))->first();
+            if ($user AND $user->token_key == $req->header('Token-Key')) {
+                $event->read = true;
+                $event->save();
+                return $this->returnMessage('success', 'L\'évènements a été marqué comme lu', 'Event read', 200);
+            }
+            return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
+        }
+        return $this->returnMessage('fail', 'Vous n\'avez pas précisé de tokens de connexion', 'Credentials not provided', 422);
+    }
+
+    public function V3postAllEventsRead(Request $req){
+        if (!empty($req->header('Token-Id'))) {
+            $user = User::where('token_id', $req->header('Token-Id'))->first();
+            if ($user AND $user->token_key == $req->header('Token-Key')) {
+                $events = Event::where('user_id', $user->id)->get();
+                foreach ($events as $event){
+                    $event->read = true;
+                    $event->save();
+                }
+                return $this->returnMessage('success', 'Tous les évènements ont été marqués comme lus', 'Events read', 200);
+            }
+            return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
+        }
+        return $this->returnMessage('fail', 'Vous n\'avez pas précisé de tokens de connexion', 'Credentials not provided', 422);
+    }
+
+    public function V3getApiFree(Request $req)
+    {
+        $dates = [];
+        $apifrees = Apifree::all();
+        foreach ($apifrees as $apifree){
+            array_push($dates, $apifree['modified_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($apifrees->toArray(), 86000, $max);;
+    }
+
+    public function V3getGarages(Request $req)
+    {
+        $dates = [];
+        $garages = Garage::all();
+        foreach ($garages as $garage){
+            array_push($dates, $garage['modified_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($garages->toArray(), 86000, $max);;
+    }
+
+    public function V3getGarage(Request $req, Garage $g)
+    {
+        return $this->returnFinal($g, 60, $g['modified_at']);
+    }
+
+    public function V3postGarageState(Request $req, Garage $g)
+    {
+        $g->state = $req->input('state');
+        $g->save();
+        return $this->returnFinal($g, 60, $g['modified_at']);
+    }
+
+    public function V3postOpenGarage(Request $req, Garage $g){
+        $ip = $req->ip();
+        $user = User::where('token_id', $req->header('Token-Id'))->first();
+        if (strpos($ip, '192.168') !== false){
+            $c = new Celery('localhost', 'guest', 'guest', '/');
+            $c->PostTask('worker.garage_authorized', array($g->id, $ip, $user->id));
+            return $this->returnMessage('success', 'Le garage va s\'ouvrir', 'Garage is going to be opened', 200);
+        }
+        else {
+            $c = new Celery('localhost', 'guest', 'guest', '/');
+            $c->PostTask('worker.send_code_garage', array($g->id, $ip, $user->id));
+            return $this->returnMessage('pending', 'Un code de validation a été envoyé par SMS.', 'A validation cpde has been send.', 200);
+        }
+    }
+
+    public function V3postValidationCode(Request $req){
+        $code = $req->input('code');
+        $ip = $req->ip();
+        $user = User::where('token_id', $req->header('Token-Id'))->first();
+        if($user){
+            $c = new Celery('localhost', 'guest', 'guest', '/');
+            $result = $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));
+            if($result == 200){
+                return $this->returnMessage('success', 'Le garage va s\'ouvrir', 'Garage is going to be opened', 200);
+            }
+            return $this->returnMessage('fail', 'Le code est incorrect', 'Code is incorrect', 403);
+        }
+    }
+
 }

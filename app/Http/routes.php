@@ -63,6 +63,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/logout', array('as' => 'logout', 'uses' => 'Auth\AuthController@getLogout'));
 });
 
+//Deprecated
 Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
 
     Route::post('wakeonlan', 'ApiController@wakeOnLan');
@@ -95,6 +96,7 @@ Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
     });
 });
 
+//Deprecated
 Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
 
     //Special response for app which give all real-time information
@@ -179,6 +181,96 @@ Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {
         //POST "g"-> garage id, "state"-> state of the garage (0->close, 1->open)
         Route::post('garage/{g}', 'ApiController@postGarageState');
         Route::get('ping', function (Request $req) {
+            return 'Pong';
+        });
+});
+
+Route::group(['prefix' => 'api/v3', 'middleware' => 'API'], function () {
+
+    //Special response for app which give all real-time information
+        Route::get('all', 'ApiController@V3getApp');
+    //Wake On Lan
+        //POST "id"-> device id to power on
+        Route::post('wakeonlan', 'ApiController@V3wakeOnLan');
+
+    //All infos datas
+        //GET
+        Route::get('datas', 'ApiController@V3getAllDatas');
+    //Temperature
+        //GET "device"-> device id's requested temperature
+        Route::get('temperatures/{device}', 'ApiController@V3getTemperature');
+        //GET all temperatures from all sensors available
+        Route::get('temperatures', 'ApiController@V3getAllTemperatures');
+        //POST "temperature"-> value of temperature
+        Route::post('temperatures', 'ApiController@V3postTemperature');
+
+    //Humidity
+        //GET "device"-> device id's requested humidity
+        Route::get('humiditys/{device}', 'ApiController@V3getHumidity');
+        //GET all temperatures from all sensors available
+        Route::get('humiditys', 'ApiController@V3getAllHumiditys');
+        //POST "humidity"-> value of humidity sensor
+        Route::post('humidityq', 'ApiController@V3postHumidity');
+
+    //Plant-Humiditys
+        //GET "device"-> device id's requested plant humidity
+        Route::get('plants/humidity/{device}', 'ApiController@V3getPlantHumidity');
+        //GET all temperatures from all sensors available
+        Route::get('plants/humidity', 'ApiController@V3getAllPlantHumiditys');
+        //POST "humidity"-> value of humidity sensor
+        Route::post('plants/humidity', 'ApiController@V3postPlantHumidity');
+
+
+    //Alarms
+        //GET all alarms
+        Route::get('alarms', 'ApiController@V3getAllAlarms');
+        //GET "device"-> device id
+        Route::get('alarms/{device}', 'ApiController@V3getAlarmByDeviceId');
+        //POST "device"-> device id. Change the state of the alarm.
+        Route::post('alarms/{device}', 'ApiController@V3postChangeAlarmState');
+        //GET scheduled alarms
+        Route::get('alarms/scheduled', 'ApiController@V3getScheduledAlarms');
+        //POST add scheduled alarm
+        Route::post('alarms/{device}/scheduled', 'ApiController@V3postAddScheduled');
+        //DELETE the scheduled alarms
+        Route::delete('alarms/scheduled/{id}', 'ApiController@V3deleteScheduled');
+        //GET inform the system that a movement has been detected
+        Route::post('alarms/{device}/movement', 'ApiController@V3postSendAlarm');
+
+
+    //Devices
+        //GET "device"->device id
+        Route::get('devices/{device}', 'ApiController@V3getDevice');
+        //GET all devices
+        Route::get('devices', 'ApiController@V3getDevices');
+        //POST re-generate token for the device
+        Route::post('devices/gen_token', 'ApiController@V3postDeviceGenerateToken');
+
+    //Events
+        //GET
+        Route::get('events', 'ApiController@V3getEvents');
+        //POST "event"->event's id to be mark as read
+        Route::post('events/{event}', 'ApiController@V3postEventRead');
+        //POST, mark all events read for an user
+        Route::post('events/read', 'ApiController@V3postAllEventsRead');
+
+    //Api Free Key
+        //GET
+        Route::get('sms', 'ApiController@V3getApiFree');
+
+    //Garages
+        //GET
+        Route::get('garages', 'ApiController@V3getGarages');
+        //POST a garage to get up
+        Route::post('garages/up/{g}', 'ApiController@V3postOpenGarage');
+        //POST validation code
+        Route::post('garages/up', 'ApiController@V3postValidationCode');
+        //GET "g"->garage id
+        Route::get('garages/{g}', 'ApiController@V3getGarage');
+        //POST "g"-> garage id, "state"-> state of the garage (0->close, 1->open)
+        Route::post('garages/{g}', 'ApiController@V3postGarageState');
+
+    Route::get('ping', function (Request $req) {
             return 'Pong';
         });
 });
