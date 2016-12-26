@@ -634,7 +634,7 @@ class ApiController extends Controller
         $device->alarm->state = !$state;
         $device->push();
 
-        return $this->returnMessage('success', 'L\'alarme a été modifiée', 'State changed', 200);
+        return $this->returnMessage('success', 'L\'alarme a été modifiée', !$state, 200);
     }
 
     public function V3postSendAlarm(Request $req, Device $device){

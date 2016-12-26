@@ -89,6 +89,14 @@
 
         var alarms = [];
 
+        function getColorFromState(state){
+            if(state == '1'){
+                return "Activée/blue/darken-3";
+            }
+            else {
+                return "Désactivée/grey/lighten-2"
+            }
+        }
 
         function initAlarmes(){
             $.get({
@@ -98,42 +106,40 @@
                     "Token-Key": token_key
                 },
                 success: function(data, textStatus, xhr){
-			console.log(data);
                     if(data['status'] == "success"){
                         for (var i = 0; i < data['data'].length; i++) {
                             var alarme = data['data'][i];
                             var state = "Désactivée";
                             if(alarme['state'] == 1) state = "Activée";
                             alarms.push(alarme);
-                            $("#Alarmes").append('<tr> <td>' + alarme['device']['name'] + '</td><td><a class="waves-effect btn ' + state + '</td></tr>');
+                            $("#Alarmes").append('<tr> <td>' + alarme['device']['name'] + '</td><td>' +
+                                    '<a class="waves-effect btn" onclick="activateAlarm(' + alarme['device_id'] + ')" id="alarm' + alarme['id'] + '"> ' +
+                                    state + '</a></td></tr>');
              	       }
                     }
                }
-});
+            });
         }
-        initAlarmes();
-    </script>
-<!--<script src="{{ asset('js/AlarmBox.js') }}"></script>
-<script src="{{ asset('js/wakeOnLan.js') }}"></script>
-<script src="{{ asset('js/TemperatureBox.js') }}"></script>
-<script src="{{ asset('js/Event.js') }}"></script>
-<script src="{{ asset('js/GarageBox.js') }}"></script>-->
-<script>
-    var token_id = "{{ Auth::user()->token_id }}";
-    var token_key = "{{ Auth::user()->token_key}}";
 
-/* ReactDOM.render(React.createElement(Event, {tokenID: token_id, tokenKey: token_key}), document.getElementById('Event'));
-  @foreach ($wakeOnLan as $wol)
-    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: token_id,
-      tokenKey: token_key}), document.getElementById('wol{{ $wol->id }}'));
-  @endforeach
-  @foreach ($temperaturesDevices as $temperaturesDevice)
-    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}",
-      tokenID: token_id, tokenKey: token_key}), document.getElementById('temp{{ $temperaturesDevice->id }}'));
-  @endforeach
-  @foreach ($garages as $garage)
-    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}",
-      tokenID: token_id, tokenKey: token_key}), document.getElementById('garage{{ $garage->id }}'));
-  @endforeach*/
-</script>
+        function activateAlarm(id){
+            $.post({
+                url: '/api/v3/alarms/' + id,
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        Materialize.toast(data['userInfo'], 4000);
+                        r = getColorFromState(data['details']).split('/');
+                        $("#alarme" + id).text(r[0]);
+                    }
+                }
+
+            })
+        }
+
+        initAlarmes();
+
+    </script>
 @endsection
