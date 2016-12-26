@@ -390,8 +390,9 @@ class ApiController extends Controller
     }
 
     private function returnMessage($status, $userInfo, $details, $code){
-        return response(json_encode(['status' => $status, 'user_info' => $userInfo, 'details' => $details]), $code)
+        $response = response(json_encode(['status' => $status, 'user_info' => $userInfo, 'details' => $details]), $code)
             ->header('Content-Type', 'application/json');
+        return $response;
     }
 
     private function returnFinal($data, $maxage, $lastmodified){
@@ -399,37 +400,35 @@ class ApiController extends Controller
             ->header('Content-Type', 'application/json');
         if($maxage != 0) $response->header('Cache-Control', 'max-age=' . $maxage);
         if($lastmodified != 0) $response->header('Last-Modified', gmdate('D, d M Y H:i:s', $lastmodified) . " GMT");
+        return $response;
     }
 
     public function V3getApp(Request $request){
         $alarms = Alarm::all();
         $garages = Garage::all();
-        $events = Event::all();
-        $devices = Device::all();
+        $devices = Device::where('type', '4')->get();
         $result = [];
+        $dates = [];
         foreach ($devices as $device){
-            if($device->type == '4'){
-                $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
-                $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
-                $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
-                if($temperature != null){
-                    array_push($result, $temperature);
-                }
-                if($humidity != null){
-                    array_push($result, $humidity);
-                }
-                if($pHumidity != null){
-                    array_push($result, $pHumidity);
-                }
+            $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')->first();
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+            $pHumidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+            if($temperature != null){
+                array_push($result, $temperature);
+                array_push($dates, $temperature['created_at']);
+            }
+            if($humidity != null){
+                array_push($result, $humidity);
+                array_push($dates, $humidity['created_at']);
+            }
+            if($pHumidity != null){
+                array_push($result, $pHumidity);
+                array_push($dates, $pHumidity['created_at']);
             }
         }
-        $response = '{';
-        $response .= "'alarms': " . $alarms . ',';
-        $response .= "'garages': " . $garages . ',';
-        $response .= "'result': " . json_encode($result);
-        //$response .= "'events': " . $events . '}';
-        $response .= '}';
-        return $response;
+        $max = max(array_map('strtotime', $dates));
+        $response = ['alarms' => $alarms, 'garages' => $garages, 'result' => $result];
+        return $this->returnFinal($response, '60', $max);
 
     }
 
@@ -472,16 +471,8 @@ class ApiController extends Controller
                     array_push($dates, $pHumidity['created_at']);
                 }
                 $max = max(array_map('strtotime', $dates));
-        $response = response($result, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Cache-Control', 'max-age=300')
-            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $max) . " GMT");
         }
-$response = response($result, 200)
-            ->header('Content-Type', 'application/json')
-            ->header('Cache-Control', 'max-age=300')
-            ->header('Last-Modified', gmdate('D, d M Y H:i:s', $max) . " GMT");
-	return $response;
+        return $this->returnFinal($result, '300', $max);
 
     }
 
