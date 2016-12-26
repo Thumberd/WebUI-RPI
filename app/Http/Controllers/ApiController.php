@@ -442,6 +442,7 @@ class ApiController extends Controller
             }
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $request)) return response("Not Modified", 304);
         $response = ['alarms' => $alarms, 'garages' => $garages, 'result' => $result];
         return $this->returnFinal($response, '60', $max);
 
@@ -487,7 +488,7 @@ class ApiController extends Controller
                 }
                 $max = max(array_map('strtotime', $dates));
         }
-        $this->handleIfModifiedSinceHeader($max, $req);
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($result, '300', $max);
 
     }
@@ -497,7 +498,7 @@ class ApiController extends Controller
         if ($device->type == '4') {
             $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
                 ->first();
-            $this->handleIfModifiedSinceHeader($max, $req);
+            if($this->handleIfModifiedSinceHeader($temperature['created_at'], $req)) return response("Not Modified", 304);
             return $this->returnFinal($temperature, '300', $temperature['created_at']);
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des températures',
@@ -541,6 +542,7 @@ class ApiController extends Controller
     {
         if ($device->type == '4') {
             $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')->first();
+            if($this->handleIfModifiedSinceHeader($humidity['created_at'], $req)) return response("Not Modified", 304);
             return $this->returnFinal($humidity, '300', $humidity['created_at']);
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités',
@@ -558,6 +560,7 @@ class ApiController extends Controller
             array_push($dates, $humidity['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($devicesHumiditys, '300', $max);
     }
 
@@ -582,6 +585,7 @@ class ApiController extends Controller
     {
         if ($device->type == '4') {
             $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+            if($this->handleIfModifiedSinceHeader($humidity['created_at'], $req)) return response("Not Modified", 304);
             return $this->returnFinal($humidity, '300', $humidity['created_at']);
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
@@ -598,6 +602,7 @@ class ApiController extends Controller
             array_push($dates, $humidity['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($plantHumiditys, '300', $max);
     }
 
@@ -626,6 +631,7 @@ class ApiController extends Controller
             array_push($dates, $alarm['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($alarms, 60, $max);
     }
 
@@ -687,6 +693,7 @@ class ApiController extends Controller
             array_push($dates, $device['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($devices->toArray(), 86000, $max);;
     }
 
@@ -712,6 +719,7 @@ class ApiController extends Controller
             if ($user AND $user->token_key == $req->header('Token-Key')) {
                 $events = Event::where('user_id', $user->id)->where('read', 0)->get();
                 $lastEvent = Event::where('user_id', $user->id)->where('read', 0)->orderBy('created_at', 'desc')->first();
+                if($this->handleIfModifiedSinceHeader($lastEvent['created_at'], $req)) return response("Not Modified", 304);
                 return $this->returnFinal($events, 500, $lastEvent['created_at']);
             }
             return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
@@ -758,6 +766,7 @@ class ApiController extends Controller
             array_push($dates, $apifree['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($apifrees->toArray(), 86000, $max);;
     }
 
@@ -769,6 +778,7 @@ class ApiController extends Controller
             array_push($dates, $garage['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($garages->toArray(), 86000, $max);;
     }
 

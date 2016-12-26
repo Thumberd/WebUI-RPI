@@ -26,8 +26,8 @@
 
 <body id="app-layout">
   <nav>
-    <div class="nav-wrapper blue darken-4">
-      <a href="#" class="brand-logo center"><img src="{{ asset('media/logo.png') }}"></a>
+    <div class="nav-wrapper grey darken-4">
+      <a href="#" class="brand-logo center"><img style="height: 70px;" src="{{ asset('media/logo.png') }}"></a>
       <a href="#" data-activates="mobile-demo" class="button-collapse7"><i class="fa fa-bars"></i></a>
 
       <ul id="nav-mobile" class="left hide-on-med-and-down">

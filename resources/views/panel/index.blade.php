@@ -77,12 +77,16 @@
 @section('JS')
 
     <script>
-        var token_id = "{{ Auth::user()->token_id }}";
-        var token_key = "{{ Auth::user()->token_key}}";
+    var token_id = "{{ Auth::user()->token_id }}";
+    var token_key = "{{ Auth::user()->token_key}}";
 
-        var alarms = [];
+    var alarms = [];
 	var temperatures = [];
 	var garages = [];
+
+    var last_update_alarms;
+    var last_update_garages;
+    var last_update_temperatures;
 
         function getColorFromState(state){
             if(state == true){
@@ -111,6 +115,7 @@
                 },
                 success: function(data, textStatus, xhr){
                     if(data['status'] == "success"){
+                        last_update_alarms = new Date().toGMTString();
                         for (var i = 0; i < data['data'].length; i++) {
                             var alarme = data['data'][i];
                             var state = "Désactivée";
@@ -137,15 +142,16 @@
                 },
                 success: function(data, textStatus, xhr){
                     if(data['status'] == "success"){
+                        last_update_temperatures = new Date().toGMTString();
                         for (var i = 0; i < data['data'].length; i++) {
                             var temperature = data['data'][i];
                             temperatures.push(temperature);
-			    var date = new Date(temperature['created_at'].replace(/-/g,'/'));
-		            var aDate = new Date();
-			    var color;
-		            if (aDate - date > 1000 * 60 * 60){
-		                color = "red-text";
-		   	    }
+                            var date = new Date(temperature['created_at'].replace(/-/g,'/'));
+                                var aDate = new Date();
+                            var color;
+                                if (aDate - date > 1000 * 60 * 60){
+                                    color = "red-text";
+                            }
                             $("#Temperatures").append('<tr> <td><p class="' + color + '">' + temperature['device']['name'] + '</p></td><td>' +
                                     '<p id="temperature' + temperature['device_id'] + '" class="' + color + '"> ' + temperature['value'] + '</p></td></tr>');
                        }
@@ -163,14 +169,15 @@
                 },
                 success: function(data, textStatus, xhr){
                     if(data['status'] == "success"){
+                        last_update_garages = new Date().toGMTString();
                         for (var i = 0; i < data['data'].length; i++) {
                             var garage = data['data'][i];
                             garages.push(garage);
 			    r = getTextFromState(garage['state']).split('/')
 			    $("#Garages").append('<tr> <td><p>' + garage['name'] + '</p></td><td>' +
-                                    '<a class="waves-effect btn ' + r[1] + ' ' + r[2] + '" onclick="openGarage(' + garage['id'] + ')"' +
-					 'id="garage' + garage['id'] + '"><p>' +
-                                    r[0] + '</p></a></td></tr>');
+                                    '<a class="waves-effect btn ' + r[1] + ' ' + r[2] + '" ' +
+                                    'onclick="openGarage(' + garage['id'] + ')"' + 'id="garage' + garage['id'] +
+                                    '"><p>' + r[0] + '</p></a></td></tr>');
                        }
                     }
                }
@@ -202,19 +209,21 @@
                 url: '/api/v3/alarms/',
                 headers: {
                     "Token-Id": token_id,
-                    "Token-Key": token_key
+                    "Token-Key": token_key,
+                    "If-Modified-Since": last_update_alarms
                 },
                 success: function(data, textStatus, xhr){
                     if(data['status'] == "success"){
+                        last_update_alarms = new Date().toGMTString();
                         if(xhr.status == 200){
-			    for(var i=0; i < alarms.length; i++){
-				var alarme = data['data'][i];
-				r = getColorFromState(alarme['state']).split('/');
-				$("#alarme" + alarme['id'])
-					.html(r[0])
-					.prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
-			    }
-			}
+                            for(var i=0; i < alarms.length; i++){
+                            var alarme = data['data'][i];
+                            r = getColorFromState(alarme['state']).split('/');
+                            $("#alarme" + alarme['id'])
+                                .html(r[0])
+                                .prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
+			                }
+			            }
                     }
                 }
 
@@ -226,10 +235,13 @@
                 url: '/api/v3/garages/',
                 headers: {
                     "Token-Id": token_id,
-                    "Token-Key": token_key
+                    "Token-Key": token_key,
+                    "If-Modified-Since": last_update_garages
                 },
                 success: function(data, textStatus, xhr){
                     if(data['status'] == "success"){
+                        last_update_garages = new Date().toGMTString();
+                        console.log(xhr.status);
                         if(xhr.status == 200){
                             for(var i=0; i < garages.length; i++){
                                 var garage = data['data'][i];
@@ -245,10 +257,40 @@
             })
         }
 
+    function refreshTemperatures(){
+        $.get({
+            url: '/api/v3/temperatures/',
+            headers: {
+                "Token-Id": token_id,
+                "Token-Key": token_key,
+                "If-Modified-Since": last_update_temperatures
+            },
+            success: function(data, textStatus, xhr){
+                if(data['status'] == "success"){
+                    last_update_temperatures = new Date().toGMTString();
+                    if(xhr.status == 200){
+                        for(var i=0; i < temperatures.length; i++){
+                            var temperature = data['data'][i];
+                            var date = new Date(temperature['created_at'].replace(/-/g,'/'));
+                            var aDate = new Date();
+                            var color;
+                            if (aDate - date > 1000 * 60 * 60){
+                                color = "red-text";
+                            }
+                            $("#Temperatures").append('<tr> <td><p class="' + color + '">' + temperature['device']['name'] + '</p></td><td>' +
+                                    '<p id="temperature' + temperature['device_id'] + '" class="' + color + '"> ' + temperature['value'] + '</p></td></tr>');
+                        }
+                    }
+                }
+            }
+
+        })
+    }
+
 	function wakeOnLan(id){
             $.post({
                 url: '/api/v3/wakeonlan/',
-		data: { id: id },
+		        data: { id: id },
                 headers: {
                     "Token-Id": token_id,
                     "Token-Key": token_key
@@ -261,10 +303,12 @@
 
             })
         }
-        initAlarmes();
+
+    initAlarmes();
 	initTemperatures();
 	initGarages();
 	setInterval(refreshAlarms, 5000);
 	setInterval(refreshGarages, 5000);
+	setInterval(refreshTemperatures, 250000);
     </script>
 @endsection
