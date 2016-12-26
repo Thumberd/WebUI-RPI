@@ -411,9 +411,11 @@ class ApiController extends Controller
 
     private function handleIfModifiedSinceHeader($lastmodified, $request){
         $ifmodifiedsince = $request->header('If-Modified-Since');
-        if(strtotime($ifmodifiedsince) <= strtotime($lastmodified)){
-            return response("Not Modified", 304);
+	if(!is_int($lastmodified)) $lastmodified = strtotime($lastmodified);
+	if(strtotime($ifmodifiedsince) >= $lastmodified){
+            return true;
         }
+	return false;
     }
 
     public function V3getApp(Request $request){
@@ -513,7 +515,7 @@ class ApiController extends Controller
             array_push($dates, $temperature['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
-        $this->handleIfModifiedSinceHeader($max, $req);
+        if($this->handleIfModifiedSinceHeader($max, $req)) return response("Not Modified", 304);
         return $this->returnFinal($temperatures, '300', $max);
     }
 
