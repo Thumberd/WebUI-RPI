@@ -409,6 +409,13 @@ class ApiController extends Controller
         return $response;
     }
 
+    private function handleIfModifiedSinceHeader($lastmodified, $request){
+        $ifmodifiedsince = $request->header('If-Modified-Since');
+        if(strtotime($ifmodifiedsince) <= strtotime($lastmodified)){
+            return response("Not Modified", 304);
+        }
+    }
+
     public function V3getApp(Request $request){
         $alarms = Alarm::all();
         $garages = Garage::all();
@@ -478,6 +485,7 @@ class ApiController extends Controller
                 }
                 $max = max(array_map('strtotime', $dates));
         }
+        $this->handleIfModifiedSinceHeader($max, $req);
         return $this->returnFinal($result, '300', $max);
 
     }
@@ -487,6 +495,7 @@ class ApiController extends Controller
         if ($device->type == '4') {
             $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
                 ->first();
+            $this->handleIfModifiedSinceHeader($max, $req);
             return $this->returnFinal($temperature, '300', $temperature['created_at']);
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des températures',
@@ -504,6 +513,7 @@ class ApiController extends Controller
             array_push($dates, $temperature['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
+        $this->handleIfModifiedSinceHeader($max, $req);
         return $this->returnFinal($temperatures, '300', $max);
     }
 
