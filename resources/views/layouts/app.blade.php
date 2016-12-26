@@ -18,6 +18,9 @@
         p {
             font-family: 'Quicksand', 'Roboto', sans-serif;
         }
+	.card-title {
+	    font-family: 'Quicksand', sans-serif;
+	}
     </style>
 </head>
 
@@ -65,13 +68,14 @@
     @yield('content')
 
     <!-- Compiled and minified JavaScript -->
-    <script src="{{ asset('js/react.min.js') }}"></script>
+<!--    <script src="{{ asset('js/react.min.js') }}"></script>
     <script src="{{ asset('js/react-dom.min.js') }}"></script>
     <script src="{{ asset('js/browser.min.js') }}"></script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/marked.min.js') }}"></script>
-    <script src="{{ asset('js/materialize.min.js') }}"></script>
+    <script src="{{ asset('js/materialize.min.js') }}"></script>-->
 
+<script src="{{ asset('js/jquery.min.js') }}"></script>
     <script>
       $( document ).ready(function(){
         $(".dropdown-button").dropdown();

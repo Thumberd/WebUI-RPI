@@ -1,0 +1,158 @@
+@extends('layouts.app')
+
+@section('content')
+  http://canvasjs.com/assets/script/canvasjs.min.js
+  <div id="chart_div"></div>
+      
+<div class="row">
+  <div class="col s12 m6 l12" id="Event">
+  </div>
+   <div class="col s12 m4 white-text" id="**AlarmBox">
+     <div class="card grey">
+	<div class="card-content">
+	<span class="card-title">Alarme</span>
+       <table>
+       <tbody id="Alarms">
+         @foreach($alarms as $alarm)
+          <tr>
+            <td>{{ $alarm->device->name }}</td>
+            <td id="alarm{{ $alarm->id }}"></td>
+          </tr>
+         @endforeach
+       </tbody>
+     </table>
+     </div>
+     </div>
+   </div>
+
+   <div class="col s12 m4">
+     <div class="card grey">
+       <div class="card-content white-text">
+         <span class="card-title">Wake On Lan</span>
+         <table>
+          <thead>
+            <tr>
+                <th data-field="id">Name</th>
+                <th data-field="pushon"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @foreach ($wakeOnLan as $wol)
+              <tr>
+                <td><i class="fa fa-server"></i> {{ $wol->name }}</td>
+                <td id="wol{{ $wol->id }}"></td>
+              </tr>
+            @endforeach
+          </tbody>
+        </table>
+       </div>
+     </div>
+    </div>
+
+    <div class="col s12 m4">
+      <div class="card grey">
+        <div class="card-content white-text">
+          <span class="card-title">Temperature</span>
+          <table>
+           <thead>
+             <tr>
+                 <th data-field="id">Name</th>
+                 <th data-field="value">Value</th>
+             </tr>
+           </thead>
+
+           <tbody>
+		@foreach($temperaturesDevices as $tempDevice)
+		<tr>
+			<td><i class="fa fa-leaf"></i> {{ $tempDevice->name }}</td>
+			<td id="temp{{ $tempDevice->id }}"></td>
+		</tr>
+		@endforeach
+           </tbody>
+         </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s12 m4">
+      <div class="card grey">
+        <div class="card-content white-text">
+          <span class="card-title">Garage</span>
+<!--          <table>
+           <thead>
+             <tr>
+                 <th data-field="id">Name</th>
+                 <th data-field="value">State</th>
+		 <th data-field="button">Agir</th>
+             </tr>
+           </thead>
+
+           <tbody id="GarageBox">-->
+		@foreach($garages as $garage)
+	          <div id="garage{{ $garage->id }}">
+	            
+                  </div>
+        	 @endforeach
+           <!--</tbody>
+         </table>-->
+        </div>
+      </div>
+    </div>
+<div id="chartContainer" style="height: 300px; width: 100%;">
+@endsection
+
+@section('JS')
+<script src="/js/AlarmBox.js"></script>
+<script src="/js/wakeOnLan.js"></script>
+<script src="/js/TemperatureBox.js"></script>
+<script src="/js/Event.js"></script>
+<script src="/js/GarageBox.js"></script>
+<script>
+ ReactDOM.render(React.createElement(Event, {tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key}}"}), document.getElementById('Event'));
+  @foreach ($wakeOnLan as $wol)
+    ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('wol{{ $wol->id }}'));
+  @endforeach
+  @foreach ($temperaturesDevices as $temperaturesDevice)
+    ReactDOM.render(React.createElement(TemperatureBox, { id: "{{ $temperaturesDevice->id }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('temp{{ $temperaturesDevice->id }}'));
+  @endforeach
+  @foreach ($alarms as $alarm)
+    ReactDOM.render(React.createElement(AlarmBox, { id: "{{ $alarm->device->id }}", name: "{{ $alarm->device->name }}", tokenID: "{{ Auth::user()->token_id}}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('alarm{{ $alarm->id }}'));
+  @endforeach
+  @foreach ($garages as $garage)
+    ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}", tokenID: "{{ Auth::user()->token_id }}", tokenKey: "{{ Auth::user()->token_key }}"}), document.getElementById('garage{{ $garage->id }}'));
+  @endforeach
+</script>
+
+<script type="text/javascript">
+window.onload = function () {
+    var chart = new CanvasJS.Chart("chartContainer",
+    {
+      title:{
+        text: "Simple Date-Time Chart"
+    },
+    axisX:{
+        title: "timeline",
+        gridThickness: 2
+    },
+    axisY: {
+        title: "Downloads"
+    },
+    data: [
+    {        
+        type: "area",
+        dataPoints: [//array
+	@foreach($pHum as $data)
+        { x: new Date('{{ $data['created_at'] }}'), y: {{ $data['value'] }}},
+	@endforeach
+
+        ]
+    }
+    ]
+});
+
+    chart.render();
+}
+</script>
+<script type="text/javascript" src="/assets/script/canvasjs.min.js"
+@endsection

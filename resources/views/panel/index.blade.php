@@ -89,20 +89,6 @@
 
         var alarms = [];
 
-        function getDevice(id){
-            $.get({
-                url: '/api/v3/devices/' + id,
-                headers: {
-                    "Token-Id": token_id,
-                    "Token-Key": token_key
-                },
-                success: function(data, textStatus, xhr){
-                    if(data['status'] == "success"){
-                        return data['data'];
-                    }
-                }
-            })
-        }
 
         function initAlarmes(){
             $.get({
@@ -112,34 +98,31 @@
                     "Token-Key": token_key
                 },
                 success: function(data, textStatus, xhr){
+			console.log(data);
                     if(data['status'] == "success"){
                         for (var i = 0; i < data['data'].length; i++) {
                             var alarme = data['data'][i];
                             var state = "Désactivée";
                             if(alarme['state'] == 1) state = "Activée";
                             alarms.push(alarme);
-                            $("#Alarmes").append('<tr> <td>' + getDevice(alarme['device_id'])['name'] + '</td><td id="alarm' + alarme['id'] + '"></td></tr>');
-                        }
+                            $("#Alarmes").append('<tr> <td>' + alarme['device']['name'] + '</td><td><a class="waves-effect btn ' + state + '</td></tr>');
+             	       }
                     }
-                },
-                error: function(xhr, status, err){
-                    console.error(status, err.toString());
-                    $("#Alarmes").append('<h1>Erreur API</h1>');
-                }
-            });
+               }
+});
         }
         initAlarmes();
     </script>
-<script src="{{ asset('js/AlarmBox.js') }}"></script>
+<!--<script src="{{ asset('js/AlarmBox.js') }}"></script>
 <script src="{{ asset('js/wakeOnLan.js') }}"></script>
 <script src="{{ asset('js/TemperatureBox.js') }}"></script>
 <script src="{{ asset('js/Event.js') }}"></script>
-<script src="{{ asset('js/GarageBox.js') }}"></script>
+<script src="{{ asset('js/GarageBox.js') }}"></script>-->
 <script>
     var token_id = "{{ Auth::user()->token_id }}";
     var token_key = "{{ Auth::user()->token_key}}";
 
- ReactDOM.render(React.createElement(Event, {tokenID: token_id, tokenKey: token_key}), document.getElementById('Event'));
+/* ReactDOM.render(React.createElement(Event, {tokenID: token_id, tokenKey: token_key}), document.getElementById('Event'));
   @foreach ($wakeOnLan as $wol)
     ReactDOM.render(React.createElement(wakeOnLan, { id: "{{ $wol->id }}", tokenID: token_id,
       tokenKey: token_key}), document.getElementById('wol{{ $wol->id }}'));
@@ -151,6 +134,6 @@
   @foreach ($garages as $garage)
     ReactDOM.render(React.createElement(GarageBox, { id: "{{ $garage->id }}", name: "{{ $garage->name }}",
       tokenID: token_id, tokenKey: token_key}), document.getElementById('garage{{ $garage->id }}'));
-  @endforeach
+  @endforeach*/
 </script>
 @endsection

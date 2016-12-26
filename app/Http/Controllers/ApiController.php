@@ -608,7 +608,7 @@ class ApiController extends Controller
     }
 
     public function V3getAllAlarms(Request $req){
-        $alarms = Alarm::all();
+        $alarms = Alarm::with('device')->get();
         $dates = [];
         foreach ($alarms as $alarm){
             array_push($dates, $alarm['updated_at']);
