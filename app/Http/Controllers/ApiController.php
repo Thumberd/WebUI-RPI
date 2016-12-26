@@ -611,7 +611,7 @@ class ApiController extends Controller
         $alarms = Alarm::all();
         $dates = [];
         foreach ($alarms as $alarm){
-            array_push($dates, $alarms['updated_at']);
+            array_push($dates, $alarm['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
         return $this->returnFinal($alarms, 60, $max);
@@ -790,7 +790,7 @@ class ApiController extends Controller
     public function V3postValidationCode(Request $req){
         $code = $req->input('code');
         $ip = $req->ip();
-        $user = User::where('token_id', $req->header('Token-Id'))->first();
+        $user = User::where('token_iad', $req->header('Token-Id'))->first();
         if($user){
             $c = new Celery('localhost', 'guest', 'guest', '/');
             $result = $c->PostTask('worker.send_validation_code', array($code, $ip, $user->id));

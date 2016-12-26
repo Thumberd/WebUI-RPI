@@ -5,24 +5,25 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Interface d'administration</title>
+    <title>Interface d'administration | Raspberry Pi</title>
 
     <!-- Fonts -->
     <link href="{{ asset('css/font-awesome.min.css') }}" rel='stylesheet' type='text/css'>
-  <link href="{{ asset('css/Lato.css') }}" rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Quicksand" rel="stylesheet">
 
   <!-- Compiled and minified CSS -->
   <link rel="stylesheet" href="{{ asset('css/materialize.min.css') }}">
 
     <style>
-        /*.fa-btn {*/
-            /*margin-right: 6px;*/
-        /*}*/
+        p {
+            font-family: 'Quicksand', 'Roboto', sans-serif;
+        }
     </style>
 </head>
+
 <body id="app-layout">
   <nav>
-    <div class="nav-wrapper {{ $color }} darken-1">
+    <div class="nav-wrapper blue darken-4">
       <a href="#" class="brand-logo center"><img src="{{ asset('images/logo.png') }}"></a>
       <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="fa fa-bars"></i></a>
 
