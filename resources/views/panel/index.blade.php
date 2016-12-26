@@ -213,9 +213,9 @@
                     "If-Modified-Since": last_update_alarms
                 },
                 success: function(data, textStatus, xhr){
-                    if(data['status'] == "success"){
-                        last_update_alarms = new Date().toGMTString();
-                        if(xhr.status == 200){
+                    last_update_alarms = new Date().toGMTString();
+                    if(xhr.status == 200){
+                        if(data['status'] == "success"){
                             for(var i=0; i < alarms.length; i++){
                             var alarme = data['data'][i];
                             r = getColorFromState(alarme['state']).split('/');
@@ -239,10 +239,10 @@
                     "If-Modified-Since": last_update_garages
                 },
                 success: function(data, textStatus, xhr){
-                    if(data['status'] == "success"){
-                        last_update_garages = new Date().toGMTString();
-                        console.log(xhr.status);
-                        if(xhr.status == 200){
+                    last_update_garages = new Date().toGMTString();
+                    if(xhr.status == 200){
+                        if(data['status'] == "success"){
+                            console.log(xhr.status);
                             for(var i=0; i < garages.length; i++){
                                 var garage = data['data'][i];
                                 r = getTextFromState(garage['state']).split('/');
@@ -266,9 +266,9 @@
                 "If-Modified-Since": last_update_temperatures
             },
             success: function(data, textStatus, xhr){
-                if(data['status'] == "success"){
-                    last_update_temperatures = new Date().toGMTString();
-                    if(xhr.status == 200){
+                last_update_temperatures = new Date().toGMTString();
+                if(xhr.status == 200){
+                    if(data['status'] == "success"){
                         for(var i=0; i < temperatures.length; i++){
                             var temperature = data['data'][i];
                             var date = new Date(temperature['created_at'].replace(/-/g,'/'));
