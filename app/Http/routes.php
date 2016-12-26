@@ -210,7 +210,7 @@ Route::group(['prefix' => 'api/v3', 'middleware' => 'API'], function () {
         //GET all temperatures from all sensors available
         Route::get('humiditys', 'ApiController@V3getAllHumiditys');
         //POST "humidity"-> value of humidity sensor
-        Route::post('humidityq', 'ApiController@V3postHumidity');
+        Route::post('humiditys', 'ApiController@V3postHumidity');
 
     //Plant-Humiditys
         //GET "device"-> device id's requested plant humidity

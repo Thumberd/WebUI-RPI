@@ -582,7 +582,7 @@ class ApiController extends Controller
         $dates = [];
         foreach ($devices as $device){
             $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
-            array_push($plantHumiditys, $humidity);
+            if($humidity != null) array_push($plantHumiditys, $humidity);
             array_push($dates, $humidity['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
@@ -601,14 +601,20 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $phum;
                 $entry->save();
-                $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
+                return $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
             }
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
     }
 
     public function V3getAllAlarms(Request $req){
-        return $this->returnFinal(Alarm::all(), 60, 0);
+        $alarms = Alarm::all();
+        $dates = [];
+        foreach ($alarms as $alarm){
+            array_push($dates, $alarms['updated_at']);
+        }
+        $max = max(array_map('strtotime', $dates));
+        return $this->returnFinal($alarms, 60, $max);
     }
 
     public function V3getAlarmByDeviceId(Request $req, Device $device)
@@ -616,19 +622,19 @@ class ApiController extends Controller
         if($device->type != "2") return $this->returnMessage('fail', 'Le périhpérique spécifié n\'est pas une alarme',
             'Specified device isn\'t an alarm', 422);
 
-        return $this->returnFinal($device->alarm, 60, 0);
+        return $this->returnFinal($device->alarm, 60, $device->alarm->updated_at);
     }
 
     public function V3postChangeAlarmState(Request $req, Device $device)
     {
         if($device->type != "2") return $this->returnMessage('fail', 'Le périhpérique spécifié n\'est pas une alarme',
             'Specified device isn\'t an alarm', 422);
-        $state = boolval($device->alarm()->state);
+        $state = boolval($device->alarm->state);
 
-        $device->alarm()->state = !$state;
+        $device->alarm->state = !$state;
         $device->push();
 
-        return $this->returnFinal($device->alarm(), 0, 0);
+        return $this->returnMessage('success', 'L\'alarme a été modifiée', 'State changed', 200);
     }
 
     public function V3postSendAlarm(Request $req, Device $device){
@@ -638,7 +644,7 @@ class ApiController extends Controller
     }
 
     public function V3getScheduledAlarms(Request $req){
-        return $this->returnFinal(Scheduled::all(), 21600, 0);
+        return $this->returnFinal(Scheduled::all(), 21600, null);
     }
 
     public function V3postAddScheduled(Request $req, Device $device){
@@ -659,14 +665,14 @@ class ApiController extends Controller
 
     public function V3getDevice(Request $req, Device $device)
     {
-        return $this->returnFinal($device->toArray(), 1200000, $device['modified_at']);
+        return $this->returnFinal($device->toArray(), 1200000, $device['updated_at']);
     }
 
     public function V3getDevices(Request $req){
         $dates = [];
         $devices = Device::all();
         foreach ($devices as $device){
-            array_push($dates, $device['modified_at']);
+            array_push($dates, $device['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
         return $this->returnFinal($devices->toArray(), 86000, $max);;
@@ -680,7 +686,7 @@ class ApiController extends Controller
                 $device->token_id = bin2hex(openssl_random_pseudo_bytes(6));
                 $device->token_key = bin2hex(openssl_random_pseudo_bytes(12));
                 $device->save();
-                return $this->returnFinal($device->makeVisible(['token_id', 'token_key'])->toArray(), 86000, $device['modified_at']);
+                return $this->returnFinal($device->makeVisible(['token_id', 'token_key'])->toArray(), 86000, $device['updated_at']);
             }
             return $this->returnMessage('fail', 'Les identifiants de connexion sont incorrects', 'Combination ID/KEY does not match our records', 403);
         }
@@ -737,7 +743,7 @@ class ApiController extends Controller
         $dates = [];
         $apifrees = Apifree::all();
         foreach ($apifrees as $apifree){
-            array_push($dates, $apifree['modified_at']);
+            array_push($dates, $apifree['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
         return $this->returnFinal($apifrees->toArray(), 86000, $max);;
@@ -748,7 +754,7 @@ class ApiController extends Controller
         $dates = [];
         $garages = Garage::all();
         foreach ($garages as $garage){
-            array_push($dates, $garage['modified_at']);
+            array_push($dates, $garage['updated_at']);
         }
         $max = max(array_map('strtotime', $dates));
         return $this->returnFinal($garages->toArray(), 86000, $max);;
@@ -756,14 +762,14 @@ class ApiController extends Controller
 
     public function V3getGarage(Request $req, Garage $g)
     {
-        return $this->returnFinal($g, 60, $g['modified_at']);
+        return $this->returnFinal($g, 60, $g['updated_at']);
     }
 
     public function V3postGarageState(Request $req, Garage $g)
     {
         $g->state = $req->input('state');
         $g->save();
-        return $this->returnFinal($g, 60, $g['modified_at']);
+        return $this->returnFinal($g, 60, $g['updated_at']);
     }
 
     public function V3postOpenGarage(Request $req, Garage $g){
