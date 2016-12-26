@@ -33,7 +33,7 @@
             @foreach ($wakeOnLan as $wol)
               <tr>
                 <td><i class="fa fa-server"></i> {{ $wol->name }}</td>
-                <td id="wol{{ $wol->id }}"></td>
+                <td><a class="waves-effect btn grey lighten-2 black-text" onclick="wakeOnLan({{ $wol->id }})">Allumer</a></td>
               </tr>
             @endforeach
           </tbody>
@@ -54,13 +54,7 @@
              </tr>
            </thead>
 
-           <tbody>
-		@foreach($temperaturesDevices as $tempDevice)
-		<tr>
-			<td><i class="fa fa-leaf"></i> {{ $tempDevice->name }}</td>
-			<td id="temp{{ $tempDevice->id }}"></td>
-		</tr>
-		@endforeach
+           <tbody id="Temperatures">
            </tbody>
          </table>
         </div>
@@ -71,11 +65,10 @@
       <div class="card grey darken-2">
         <div class="card-content white-text">
           <span class="card-title">Garages</span>
-		@foreach($garages as $garage)
-	          <div id="garage{{ $garage->id }}">
-	            
-              </div>
-        	 @endforeach
+	  <table>
+       	     <tbody id="Garages">
+             </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -88,15 +81,26 @@
         var token_key = "{{ Auth::user()->token_key}}";
 
         var alarms = [];
+	var temperatures = [];
+	var garages = [];
 
         function getColorFromState(state){
-            if(state == '1'){
-                return "Activée/blue/darken-3";
+            if(state == true){
+                return "Activée/grey/darken-3";
             }
             else {
-                return "Désactivée/grey/lighten-2"
+                return "Désactivée/grey/lighten-2 black-text"
             }
         }
+
+	function getTextFromState(state) {
+		if(state == true){
+			return "Ouvert/grey/darken-3";
+		}
+		else {
+			return "Fermé/grey/lighten-2 black-text";
+		}
+	}
 
         function initAlarmes(){
             $.get({
@@ -112,16 +116,68 @@
                             var state = "Désactivée";
                             if(alarme['state'] == 1) state = "Activée";
                             alarms.push(alarme);
-                            $("#Alarmes").append('<tr> <td>' + alarme['device']['name'] + '</td><td>' +
-                                    '<a class="waves-effect btn" onclick="activateAlarm(' + alarme['device_id'] + ')" id="alarm' + alarme['id'] + '"> ' +
-                                    state + '</a></td></tr>');
+			    r = getColorFromState(alarme['state']).split('/');
+                            $("#Alarmes").append('<tr> <td><p>' + alarme['device']['name'] + '</p></td><td>' +
+                                    '<a class="waves-effect btn ' + r[1] + ' ' + r[2] + '" onclick="activateAlarm(' + alarme['device_id'] + ', ' + 
+				alarme['id'] + ')" id="alarme' + alarme['id'] + '"><p>' +
+                                    state + '</p></a></td></tr>');
              	       }
                     }
                }
             });
         }
 
-        function activateAlarm(id){
+
+	function initTemperatures(){
+            $.get({
+                url: '/api/v3/temperatures',
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        for (var i = 0; i < data['data'].length; i++) {
+                            var temperature = data['data'][i];
+                            temperatures.push(temperature);
+			    var date = new Date(temperature['created_at'].replace(/-/g,'/'));
+		            var aDate = new Date();
+			    var color;
+		            if (aDate - date > 1000 * 60 * 60){
+		                color = "red-text";
+		   	    }
+                            $("#Temperatures").append('<tr> <td><p class="' + color + '">' + temperature['device']['name'] + '</p></td><td>' +
+                                    '<p id="temperature' + temperature['device_id'] + '" class="' + color + '"> ' + temperature['value'] + '</p></td></tr>');
+                       }
+                    }
+               }
+            });
+        }
+
+	function initGarages(){
+            $.get({
+                url: '/api/v3/garages',
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        for (var i = 0; i < data['data'].length; i++) {
+                            var garage = data['data'][i];
+                            garages.push(garage);
+			    r = getTextFromState(garage['state']).split('/')
+			    $("#Garages").append('<tr> <td><p>' + garage['name'] + '</p></td><td>' +
+                                    '<a class="waves-effect btn ' + r[1] + ' ' + r[2] + '" onclick="openGarage(' + garage['id'] + ')"' +
+					 'id="garage' + garage['id'] + '"><p>' +
+                                    r[0] + '</p></a></td></tr>');
+                       }
+                    }
+               }
+            });
+        }
+
+        function activateAlarm(id, alarme_id){
             $.post({
                 url: '/api/v3/alarms/' + id,
                 headers: {
@@ -132,14 +188,83 @@
                     if(data['status'] == "success"){
                         Materialize.toast(data['userInfo'], 4000);
                         r = getColorFromState(data['details']).split('/');
-                        $("#alarme" + id).text(r[0]);
+                        $("#alarme" + alarme_id)
+				.html(r[0])
+				.prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
                     }
                 }
 
             })
         }
 
-        initAlarmes();
+	function refreshAlarms(){
+	    $.get({
+                url: '/api/v3/alarms/',
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        if(xhr.status == 200){
+			    for(var i=0; i < alarms.length; i++){
+				var alarme = data['data'][i];
+				r = getColorFromState(alarme['state']).split('/');
+				$("#alarme" + alarme['id'])
+					.html(r[0])
+					.prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
+			    }
+			}
+                    }
+                }
 
+            })
+	}
+
+	 function refreshGarages(){
+            $.get({
+                url: '/api/v3/garages/',
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        if(xhr.status == 200){
+                            for(var i=0; i < garages.length; i++){
+                                var garage = data['data'][i];
+                                r = getTextFromState(garage['state']).split('/');
+                                $("#garage" + garage['id'])
+                                        .html(r[0])
+                                        .prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
+                            }
+                        }
+                    }
+                }
+
+            })
+        }
+
+	function wakeOnLan(id){
+            $.post({
+                url: '/api/v3/wakeonlan/',
+		data: { id: id },
+                headers: {
+                    "Token-Id": token_id,
+                    "Token-Key": token_key
+                },
+                success: function(data, textStatus, xhr){
+                    if(data['status'] == "success"){
+                        Materialize.toast(data['userInfo'], 4000);
+                    }
+                }
+
+            })
+        }
+        initAlarmes();
+	initTemperatures();
+	initGarages();
+	setInterval(refreshAlarms, 5000);
+	setInterval(refreshGarages, 5000);
     </script>
 @endsection

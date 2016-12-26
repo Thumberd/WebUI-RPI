@@ -498,7 +498,7 @@ class ApiController extends Controller
         $temperatures = [];
         $dates = [];
         foreach ($devices as $device){
-            $temperature = Data::where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
+            $temperature = Data::with('device')->where('device_id', $device->id)->where('data_type', 1)->orderBy('created_at', 'desc')
                 ->first();
             array_push($temperatures, $temperature);
             array_push($dates, $temperature['created_at']);

@@ -27,8 +27,8 @@
 <body id="app-layout">
   <nav>
     <div class="nav-wrapper blue darken-4">
-      <a href="#" class="brand-logo center"><img src="{{ asset('images/logo.png') }}"></a>
-      <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="fa fa-bars"></i></a>
+      <a href="#" class="brand-logo center"><img src="{{ asset('media/logo.png') }}"></a>
+      <a href="#" data-activates="mobile-demo" class="button-collapse7"><i class="fa fa-bars"></i></a>
 
       <ul id="nav-mobile" class="left hide-on-med-and-down">
         @if (Auth::guest())
@@ -50,7 +50,7 @@
         @if (Auth::guest())
           <li><a href="{{ url('/login') }}">Connexion</a></li>
         @else
-          <li><a href="{{ url('/panel') }}">Panel</a></li>
+          <li><a href="{{ url('/panel') }}">Panell</a></li>
           <li><a href="{{ url('/devices') }}">Périphériques</a></li>
           <li><a href="{{ url('/chart') }}">Courbes</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
@@ -67,9 +67,10 @@
 
     @yield('content')
 
+
     <!-- Compiled and minified JavaScript -->
-    <script src="{{ asset('js/materialize.min.js') }}"></script>
     <script src="{{ asset('js/jquery.min.js') }}"></script>
+    <script src="{{ asset('js/materialize.min.js') }}"></script>
     <script>
       $( document ).ready(function(){
         $(".dropdown-button").dropdown();
