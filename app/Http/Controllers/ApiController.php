@@ -399,7 +399,13 @@ class ApiController extends Controller
         $response = response($this->returnData($data), 200)
             ->header('Content-Type', 'application/json');
         if($maxage != 0) $response->header('Cache-Control', 'max-age=' . $maxage);
-        if($lastmodified != 0) $response->header('Last-Modified', gmdate('D, d M Y H:i:s', $lastmodified) . " GMT");
+        if($lastmodified != null) {
+		if(is_int($lastmodified)) {
+			$response->header('Last-Modified', gmdate('D, d M Y H:i:s', $lastmodified) . " GMT");
+		} else {
+			$response->header('Last-Modified', gmdate('D, d M Y H:i:s', strtotime($lastmodified)) . " GMT");
+		}
+	}
         return $response;
     }
 
@@ -512,7 +518,7 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $temperature;
                 $entry->save();
-                $this->returnMessage('success', 'Température enregistrée', 'Saved !', 200);
+                return $this->returnMessage('success', 'Température enregistrée', 'Saved !', 200);
             }
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des températures',
@@ -536,7 +542,7 @@ class ApiController extends Controller
         foreach ($devices as $device){
             $humidity = Data::where('device_id', $device->id)->where('data_type', 2)->orderBy('created_at', 'desc')
                 ->first();
-            array_push($devicesHumiditys, $humidity);
+            if($humidity != null) array_push($devicesHumiditys, $humidity);
             array_push($dates, $humidity['created_at']);
         }
         $max = max(array_map('strtotime', $dates));
@@ -554,7 +560,7 @@ class ApiController extends Controller
                 $entry->device_id = $device->id;
                 $entry->value = $hum;
                 $entry->save();
-               $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
+                return $this->returnMessage('success', 'Humidité enregistrée', 'Saved !', 200);
             }
         }
         return $this->returnMessage('fail', 'Le périphérique est incapable d\'enregistrer des humidités', 'Device uncapable of saving humidity values', 422);
@@ -575,7 +581,7 @@ class ApiController extends Controller
         $plantHumiditys = [];
         $dates = [];
         foreach ($devices as $device){
-            $humidity = PHumidity::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
+            $humidity = Data::where('device_id', $device->id)->where('data_type', 3)->orderBy('created_at', 'desc')->first();
             array_push($plantHumiditys, $humidity);
             array_push($dates, $humidity['created_at']);
         }
@@ -610,7 +616,7 @@ class ApiController extends Controller
         if($device->type != "2") return $this->returnMessage('fail', 'Le périhpérique spécifié n\'est pas une alarme',
             'Specified device isn\'t an alarm', 422);
 
-        return $this->returnFinal($device->alarm(), 60, 0);
+        return $this->returnFinal($device->alarm, 60, 0);
     }
 
     public function V3postChangeAlarmState(Request $req, Device $device)
