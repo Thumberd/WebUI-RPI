@@ -263,7 +263,7 @@ Route::group(['prefix' => 'api/v3', 'middleware' => 'API'], function () {
         //GET
         Route::get('garages', 'ApiController@V3getGarages');
         //POST a garage to get up
-        Route::post('garages/up/{g}', 'ApiController@V3postOpenGarage');
+        Route::post('garages/{g}/up', 'ApiController@V3postOpenGarage');
         //POST validation code
         Route::post('garages/up', 'ApiController@V3postValidationCode');
         //GET "g"->garage id

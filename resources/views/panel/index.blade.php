@@ -289,6 +289,28 @@
             })
         }
 
+    function openGarage(id){
+        $.post({
+            url: '/api/v3/garages/' + id + '/up',
+            headers: {
+                "Token-Id": token_id,
+                "Token-Key": token_key
+            },
+            success: function(data, textStatus, xhr){
+                if(data['status'] == "success"){
+                    Materialize.toast(data['userInfo'], 4000);
+                    $("#alarme" + alarme_id)
+                            .html(r[0])
+                            .prop('class', 'waves-effect btn ' + r[1] + ' ' + r[2]);
+                }
+                else if(data['status'] == "pending"){
+                    window.location.href = "/code";
+                }
+            }
+
+        })
+    }
+
     initAlarmes();
 	initTemperatures();
 	initGarages();
