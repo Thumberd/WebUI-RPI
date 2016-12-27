@@ -18,15 +18,15 @@
         p {
             font-family: 'Quicksand', 'Roboto', sans-serif;
         }
-	.card-title {
-	    font-family: 'Quicksand', sans-serif;
-	}
+        html {
+            background-image: url("/media/seigaiha.png");
+        }
     </style>
 </head>
 
 <body id="app-layout">
   <nav>
-    <div class="nav-wrapper grey darken-4">
+    <div class="nav-wrapper grey darken-4" id="nav">
       <a href="#" class="brand-logo center"><img style="height: 70px;" src="{{ asset('media/logo.png') }}"></a>
       <a href="#" data-activates="mobile-demo" class="button-collapse7"><i class="fa fa-bars"></i></a>
 
@@ -46,11 +46,11 @@
         @endif
       </ul>
 
-      <ul class="side-nav" id="mobile-demo">
+      <ul class="side-nav" id="mobile-demo"> <!-- Mobile -->
         @if (Auth::guest())
           <li><a href="{{ url('/login') }}">Connexion</a></li>
         @else
-          <li><a href="{{ url('/panel') }}">Panell</a></li>
+          <li><a href="{{ url('/panel') }}">Panel</a></li>
           <li><a href="{{ url('/devices') }}">Périphériques</a></li>
           <li><a href="{{ url('/chart') }}">Courbes</a></li>
           <li><a class="dropdown-button" href="#!" data-activates="dropdown1">{{ Auth::user()->name }} <i class="fa fa-angle-down"></i></a></li>
@@ -72,10 +72,20 @@
     <script src="{{ asset('js/jquery.min.js') }}"></script>
     <script src="{{ asset('js/materialize.min.js') }}"></script>
     <script>
+        var dark = false;
       $( document ).ready(function(){
         $(".dropdown-button").dropdown();
       });
 	$('.button-collapse').sideNav();
+
+        $("#nav").click(function(){
+            console.log(dark);
+            if(dark){
+                $("#html").css("background-image", 'url("/media/seigaiha.png")');
+            } else {
+                $("#html").css("background-image", 'url("/media/dark_embroidery.png")');
+            }
+        })
     </script>
 
     @yield('JS')

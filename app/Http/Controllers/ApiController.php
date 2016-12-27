@@ -823,4 +823,10 @@ class ApiController extends Controller
         }
     }
 
+    public function V3postPreferenceUpdate(Request $request, Preference $preference){
+        $preference->value = $request->input('value');
+        $preference->save();
+        return $this->returnMessage('success', 'La préférence a été modifiée', 'Preference saved', 200);
+    }
+
 }

@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Preference;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Apifree;
 use App\Device;
-use App\Alarm;
-use App\Garage;
 use Carbon\Carbon;
 use App\Data;
 
@@ -18,23 +15,6 @@ class PanelController extends Controller
 
     public function __construct(){
         $this->middleware('auth');
-    }
-
-    private function isEvent(){
-        $actualYear = Carbon::now()->year;
-        while (true) {
-            //Xmas Check
-            $begin = Carbon::create($actualYear, 12, 10, 0, 0, 0);
-            $end = Carbon::create($actualYear, 12, 27, 0, 0, 0);
-            if(Carbon::now()->between($begin, $end)) return "Xmas";
-
-            //NYear Check
-            $begin = Carbon::create($actualYear, 12, 27, 0, 0, 0);
-            $end = Carbon::create($actualYear + 1, 01, 2, 0, 0, 0);
-            if(Carbon::now()->between($begin, $end)) return "NYear";
-
-            return false;
-        }
     }
 
     public function index(Request $request){
@@ -87,5 +67,10 @@ class PanelController extends Controller
         }
       }
       return view('panel.chart', ['tempDevices' => $tempDevices, 'temps' => $temps, 'hums' => $hums, 'pHum' => $pHum]);
+    }
+
+    public function preferences(Request $request){
+        $preferences = Preference::all();
+        return view('panel.preferences', ['preferences' => $preferences]);
     }
 }

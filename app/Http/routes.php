@@ -29,6 +29,7 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/timelapse', 'PanelController@timelapse');
     Route::get('/code', 'PanelController@code');
     Route::get('/chart', 'PanelController@chart');
+    Route::get('/preferences', 'PanelController@preferences');
 
     Route::get('/profile', 'ProfileController@index');
     Route::post('/profile/mail', 'ProfileController@storeMail');
@@ -270,6 +271,9 @@ Route::group(['prefix' => 'api/v3', 'middleware' => 'API'], function () {
         //POST "g"-> garage id, "state"-> state of the garage (0->close, 1->open)
         Route::post('garages/{g}', 'ApiController@V3postGarageState');
 
+    //Preference
+        //POST "id" preferences id "value" new value
+        Route::post('preferences/{preference}', 'ApiController@V3postPreferenceUpdate');
     Route::get('ping', function (Request $req) {
             return 'Pong';
         });

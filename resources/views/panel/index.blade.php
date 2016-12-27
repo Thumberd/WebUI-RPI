@@ -22,13 +22,6 @@
        <div class="card-content white-text">
          <span class="card-title">Réveil à distance</span>
          <table>
-          <thead>
-            <tr>
-                <th data-field="id">Nom</th>
-                <th data-field="pushon"></th>
-            </tr>
-          </thead>
-
           <tbody>
             @foreach ($wakeOnLan as $wol)
               <tr>
@@ -47,13 +40,6 @@
         <div class="card-content white-text">
           <span class="card-title">Températures</span>
           <table>
-           <thead>
-             <tr>
-                 <th data-field="id">Nom</th>
-                 <th data-field="value">°C</th>
-             </tr>
-           </thead>
-
            <tbody id="Temperatures">
            </tbody>
          </table>
@@ -153,7 +139,7 @@
                                     color = "red-text";
                             }
                             $("#Temperatures").append('<tr> <td><p class="' + color + '">' + temperature['device']['name'] + '</p></td><td>' +
-                                    '<p id="temperature' + temperature['device_id'] + '" class="' + color + '"> ' + temperature['value'] + '</p></td></tr>');
+                                    '<p id="temperature' + temperature['device_id'] + '" class="' + color + '"> ' + temperature['value'] + '°C</p></td></tr>');
                        }
                     }
                }
