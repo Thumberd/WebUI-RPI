@@ -79,11 +79,12 @@
 	$('.button-collapse').sideNav();
 
         $("#nav").click(function(){
-            console.log(dark);
             if(dark){
-                $("#html").css("background-image", 'url("/media/seigaiha.png")');
+		dark = false;
+                $("html").css("background-image", 'url("/media/seigaiha.png")');
             } else {
-                $("#html").css("background-image", 'url("/media/dark_embroidery.png")');
+		dark = true;
+                $("html").css("background-image", 'url("/media/dark_embroidery.png")');
             }
         })
     </script>
