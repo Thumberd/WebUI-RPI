@@ -242,7 +242,6 @@
                     last_update_garages = new Date().toGMTString();
                     if(xhr.status == 200){
                         if(data['status'] == "success"){
-                            console.log(xhr.status);
                             for(var i=0; i < garages.length; i++){
                                 var garage = data['data'][i];
                                 r = getTextFromState(garage['state']).split('/');
