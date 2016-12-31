@@ -64,38 +64,6 @@ Route::group(['middleware' => ['web']], function () {
     Route::get('/logout', array('as' => 'logout', 'uses' => 'Auth\AuthController@getLogout'));
 });
 
-//Deprecated
-Route::group(['prefix' => 'api/v1', 'middleware' => 'API'], function () {
-
-    Route::post('wakeonlan', 'ApiController@wakeOnLan');
-
-    Route::post('temperature', 'ApiController@temperature');
-    Route::post('alarms/{device}', 'ApiController@alarms');
-    Route::post('alarm/up/{device}', 'ApiController@alarm');
-
-    Route::post('temperature/add', 'ApiController@addTemperature');
-
-    Route::post('humidity', 'ApiController@addHumidity');
-
-    Route::post('plant-humidity', 'ApiController@addPlantHumidity');
-
-    Route::get('devices', 'ApiController@devices');
-    Route::get('device/{device}', 'ApiController@device');
-    Route::post('device/gen_token/{device}', 'ApiController@deviceGenerateToken');
-
-    Route::get('events', 'ApiController@getEvent');
-    Route::post('event/{event}/read', 'ApiController@eventRead');
-
-    Route::get('apifrees', 'ApiController@apifrees');
-
-    Route::get('garages', 'ApiController@garages');
-    Route::get('garage/{g}', 'ApiController@garage');
-    Route::post('garage/{g}', 'ApiController@garageup');
-
-    Route::get('ping', function (Request $req) {
-        return 'Pong';
-    });
-});
 
 //Deprecated
 Route::group(['prefix' => 'api/v2', 'middleware' => 'API'], function () {

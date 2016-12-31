@@ -14,6 +14,7 @@ use App\PHumidity;
 use App\Scheduled;
 use Celery;
 use App\Data;
+use App\User;
 
 class ApiController extends Controller
 {
